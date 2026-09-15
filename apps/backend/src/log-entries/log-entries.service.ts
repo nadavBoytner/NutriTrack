@@ -61,6 +61,7 @@ export class LogEntriesService {
     return this.prisma.logEntry.findMany({
       where: { userId, date: new Date(date) },
       orderBy: { id: 'asc' },
+      include: { foodItem: { select: { name: true } } },
     });
   }
 

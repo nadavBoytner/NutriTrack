@@ -21,6 +21,7 @@ model User {
 
   profile       Profile?
   nutritionGoal NutritionGoal?
+  logEntries    LogEntry[]
 }
 
 model Profile {
@@ -39,4 +40,40 @@ model NutritionGoal {
   dailyCarbsG     Int
   dailyFatG       Int
   dailyProteinG   Int
+}
+
+model FoodItem {
+  id              String  @id @default(uuid())
+  externalId      String  @unique
+  name            String
+  caloriesPer100g Float
+  carbsPer100g    Float
+  fatPer100g      Float
+  proteinPer100g  Float
+  barcode         String?
+
+  logEntries LogEntry[]
+}
+
+enum LogEntrySource {
+  db
+  manual
+}
+
+model LogEntry {
+  id         String         @id @default(uuid())
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date       DateTime       @db.Date
+  foodItemId String?
+  foodItem   FoodItem?      @relation(fields: [foodItemId], references: [id])
+  customName String?
+  quantityG  Float
+  calories   Float
+  carbsG     Float
+  fatG       Float
+  proteinG   Float
+  source     LogEntrySource
+
+  @@index([userId, date])
 }

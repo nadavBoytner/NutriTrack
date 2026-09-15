@@ -61,5 +61,9 @@
     "typescript": "^6.0.2",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.1.2"
+  },
+  "optionalDependencies": {
+    "@oxlint-tsgolint/win32-x64": "^7.0.2001",
+    "@oxlint/binding-win32-x64-msvc": "^1.83.0"
   }
 }

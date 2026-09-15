@@ -15,7 +15,7 @@ A personal nutrition tracking app. Users sign up, set up a profile and nutrition
 - **Database**: PostgreSQL - fits the relational data shape (users, goals, daily records) well.
 - **Auth**: JWT + bcrypt for password hashing. Google login - phase 2.
 - **Food database**: Open Food Facts API - free, no API key required, a huge global database that also includes barcodes (a good foundation for barcode scanning later too). Consider USDA FoodData Central later as a supplementary source for generic products.
-- **AI assistant**: Anthropic Claude API - takes free-text input from the user (e.g. "I had chicken salad and a cup of rice"), breaks it down into a list of food items with estimated quantities, and tries to match each item against the food database (text search on Open Food Facts). When there's no good match, the system can fall back on the model's own estimate, and flag the entry as "AI-estimated" (vs. "matched from database") for transparency to the user.
+- **AI assistant**: OpenAI API - takes free-text input from the user (e.g. "I had chicken salad and a cup of rice"), breaks it down into a list of food items with estimated quantities, and tries to match each item against the food database (text search on Open Food Facts). When there's no good match, the system can fall back on the model's own estimate, and flag the entry as "AI-estimated" (vs. "matched from database") for transparency to the user.
 
 ## Features - First version (MVP)
 1. **Sign up and login** - email + password only.

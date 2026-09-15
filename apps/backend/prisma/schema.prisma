@@ -22,6 +22,7 @@ model User {
   profile       Profile?
   nutritionGoal NutritionGoal?
   logEntries    LogEntry[]
+  weightEntries WeightEntry[]
 }
 
 model Profile {
@@ -76,4 +77,14 @@ model LogEntry {
   source     LogEntrySource
 
   @@index([userId, date])
+}
+
+model WeightEntry {
+  id       String   @id @default(uuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date     DateTime @db.Date
+  weightKg Float
+
+  @@unique([userId, date])
 }

@@ -8,6 +8,8 @@ import { LogEntriesModule } from './log-entries/log-entries.module.js';
 import { NutritionGoalsModule } from './nutrition-goals/nutrition-goals.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { ProfileModule } from './profile/profile.module.js';
+import { ReportsModule } from './reports/reports.module.js';
+import { WeightEntriesModule } from './weight-entries/weight-entries.module.js';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { ProfileModule } from './profile/profile.module.js';
     NutritionGoalsModule,
     FoodItemsModule,
     LogEntriesModule,
+    WeightEntriesModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -3,6 +3,7 @@ dist/
 build/
 .next/
 .expo/
+**/src/generated/
 *.tsbuildinfo
 .env
 .env.local

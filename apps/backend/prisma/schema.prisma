@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum GoalType {
+  cutting
+  bulking
+  maintain
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  profile       Profile?
+  nutritionGoal NutritionGoal?
+}
+
+model Profile {
+  userId    String   @id
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  age       Int?
+  heightCm  Int?
+  weightKg  Float?
+  goalType  GoalType?
+}
+
+model NutritionGoal {
+  userId          String @id
+  user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyCalories   Int
+  dailyCarbsG     Int
+  dailyFatG       Int
+  dailyProteinG   Int
+}

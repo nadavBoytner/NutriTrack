@@ -29,10 +29,11 @@ export default async function LogPage(props: PageProps<"/">) {
   const date = typeof dateParam === "string" ? dateParam : todayISO();
   const isToday = date === todayISO();
 
-  const [entries, goal, weightEntries] = await Promise.all([
+  const [entries, goal, weightEntries, recentManualFoods] = await Promise.all([
     apiFetch<LogEntry[]>(`/log-entries?date=${date}`, { token }),
     apiFetch<NutritionGoal | null>("/nutrition-goals", { token }),
     apiFetch<WeightEntry[]>(`/weight-entries?from=${date}&to=${date}`, { token }),
+    apiFetch<LogEntry[]>("/log-entries/recent-manual", { token }),
   ]);
 
   const totals = sumTotals(entries);
@@ -89,8 +90,9 @@ export default async function LogPage(props: PageProps<"/">) {
                 <div className="min-w-0 flex-1">
                   <p className="truncate">{entry.customName ?? entry.foodItem?.name ?? "פריט"}</p>
                   <p className="text-xs tabular-nums text-ink-soft">
-                    {Math.round(entry.quantityG)} גר&apos; · {Math.round(entry.calories)} קל&apos; · פ{" "}
-                    {Math.round(entry.carbsG)} · ש {Math.round(entry.fatG)} · ח {Math.round(entry.proteinG)}
+                    {Math.round(entry.quantityG)} {entry.quantityUnit === "portion" ? "מנות" : "גר'"} ·{" "}
+                    {Math.round(entry.calories)} קל&apos; · פח&apos; {Math.round(entry.carbsG)} · שו{" "}
+                    {Math.round(entry.fatG)} · חל&apos; {Math.round(entry.proteinG)}
                   </p>
                 </div>
                 <form action={deleteLogEntryAction.bind(null, entry.id)}>
@@ -106,7 +108,7 @@ export default async function LogPage(props: PageProps<"/">) {
         )}
 
         <FoodSearch date={date} />
-        <ManualEntryForm date={date} />
+        <ManualEntryForm date={date} recentFoods={recentManualFoods} />
       </section>
     </div>
   );

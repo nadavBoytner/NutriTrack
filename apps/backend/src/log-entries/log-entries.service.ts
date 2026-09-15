@@ -48,12 +48,22 @@ export class LogEntriesService {
         date: new Date(dto.date),
         customName: dto.customName,
         quantityG: dto.quantityG,
+        quantityUnit: dto.quantityUnit ?? 'g',
         calories: dto.calories,
         carbsG: dto.carbsG,
         fatG: dto.fatG,
         proteinG: dto.proteinG,
         source: 'manual',
       },
+    });
+  }
+
+  recentManualFoods(userId: string) {
+    return this.prisma.logEntry.findMany({
+      where: { userId, source: 'manual', customName: { not: null } },
+      orderBy: { createdAt: 'desc' },
+      distinct: ['customName'],
+      take: 8,
     });
   }
 

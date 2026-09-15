@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import type { FoodItem, LogEntry, UpsertWeightEntryInput, WeightEntry } from "@foodtrack/shared-types";
+import type { FoodItem, LogEntry, LogEntryUnit, UpsertWeightEntryInput, WeightEntry } from "@foodtrack/shared-types";
 import { apiFetch } from "@/lib/api";
 import { requireToken } from "@/lib/auth";
 
@@ -31,6 +31,7 @@ export async function addManualLogEntryAction(
   const date = String(formData.get("date"));
   const customName = String(formData.get("customName") ?? "").trim();
   const quantityG = Number(formData.get("quantityG"));
+  const quantityUnit = (formData.get("quantityUnit") === "portion" ? "portion" : "g") as LogEntryUnit;
   const calories = Number(formData.get("calories"));
   const carbsG = Number(formData.get("carbsG"));
   const fatG = Number(formData.get("fatG"));
@@ -39,11 +40,14 @@ export async function addManualLogEntryAction(
   if (!customName) {
     return { error: "יש להזין שם למאכל" };
   }
+  if (!quantityG || Number.isNaN(quantityG)) {
+    return { error: quantityUnit === "portion" ? "יש להזין מספר מנות" : "יש להזין כמות בגרמים" };
+  }
 
   await apiFetch<LogEntry>("/log-entries", {
     method: "POST",
     token,
-    body: { date, customName, quantityG, calories, carbsG, fatG, proteinG },
+    body: { date, customName, quantityG, quantityUnit, calories, carbsG, fatG, proteinG },
   });
   revalidatePath("/");
   return null;

@@ -65,7 +65,25 @@ describe('LogEntriesService', () => {
       fatG: 6,
       proteinG: 8,
       source: 'manual',
+      quantityUnit: 'g',
     });
+  });
+
+  it('stores the given quantityUnit for a manual entry', async () => {
+    prisma.logEntry.create.mockImplementation(({ data }) => Promise.resolve(data));
+
+    const result = await service.create('user-1', {
+      date: '2026-09-15',
+      quantityG: 2,
+      quantityUnit: 'portion',
+      customName: 'Protein bar',
+      calories: 400,
+      carbsG: 40,
+      fatG: 16,
+      proteinG: 20,
+    });
+
+    expect(result).toMatchObject({ quantityUnit: 'portion' });
   });
 
   it('rejects a manual entry missing required macro fields', async () => {
@@ -94,5 +112,18 @@ describe('LogEntriesService', () => {
     prisma.logEntry.findUnique.mockResolvedValue(null);
 
     await expect(service.remove('user-1', 'missing')).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('queries the most recent distinct manual entries by name', async () => {
+    prisma.logEntry.findMany.mockResolvedValue([]);
+
+    await service.recentManualFoods('user-1');
+
+    expect(prisma.logEntry.findMany).toHaveBeenCalledWith({
+      where: { userId: 'user-1', source: 'manual', customName: { not: null } },
+      orderBy: { createdAt: 'desc' },
+      distinct: ['customName'],
+      take: 8,
+    });
   });
 });

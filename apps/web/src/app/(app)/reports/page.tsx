@@ -4,7 +4,7 @@ import { CircularGauge } from "@/components/CircularGauge";
 import { WeightTrendChart } from "@/components/WeightTrendChart";
 import { apiFetch } from "@/lib/api";
 import { requireToken } from "@/lib/auth";
-import { addDaysISO, todayISO } from "@/lib/dates";
+import { addDaysISO, daysBetweenISO, todayISO } from "@/lib/dates";
 
 const PERIODS: { value: ReportPeriod; label: string }[] = [
   { value: "daily", label: "יומי" },
@@ -26,6 +26,26 @@ export default async function ReportsPage(props: PageProps<"/reports">) {
     apiFetch<WeightEntry[]>(`/weight-entries?from=${trendFrom}&to=${date}`, { token }),
   ]);
 
+  const days = daysBetweenISO(report.from, report.to);
+  const average =
+    days > 1
+      ? {
+          calories: report.totals.calories / days,
+          carbsG: report.totals.carbsG / days,
+          fatG: report.totals.fatG / days,
+          proteinG: report.totals.proteinG / days,
+        }
+      : null;
+  const dailyGoal =
+    average && report.goal
+      ? {
+          calories: report.goal.calories / days,
+          carbsG: report.goal.carbsG / days,
+          fatG: report.goal.fatG / days,
+          proteinG: report.goal.proteinG / days,
+        }
+      : null;
+
   return (
     <div className="space-y-8">
       <div>
@@ -46,9 +66,12 @@ export default async function ReportsPage(props: PageProps<"/reports">) {
       </div>
 
       <section className="space-y-4 border-b border-line pb-8">
-        <p dir="ltr" className="text-right text-sm text-ink-soft">
-          {report.from === report.to ? report.from : `${report.from} – ${report.to}`}
-        </p>
+        <div className="flex items-baseline justify-between">
+          {average && <h2 className="font-display text-lg font-medium">סה&quot;כ לתקופה</h2>}
+          <p dir="ltr" className="text-right text-sm text-ink-soft">
+            {report.from === report.to ? report.from : `${report.from} – ${report.to}`}
+          </p>
+        </div>
         <div className="grid grid-cols-4 gap-2">
           <CircularGauge label="קלוריות" current={report.totals.calories} goal={report.goal?.calories ?? null} unit="קל'" />
           <CircularGauge label="פחמימות" current={report.totals.carbsG} goal={report.goal?.carbsG ?? null} unit="גר'" />
@@ -65,6 +88,18 @@ export default async function ReportsPage(props: PageProps<"/reports">) {
           </p>
         )}
       </section>
+
+      {average && (
+        <section className="space-y-4 border-b border-line pb-8">
+          <h2 className="font-display text-lg font-medium">ממוצע יומי</h2>
+          <div className="grid grid-cols-4 gap-2">
+            <CircularGauge label="קלוריות" current={average.calories} goal={dailyGoal?.calories ?? null} unit="קל'" />
+            <CircularGauge label="פחמימות" current={average.carbsG} goal={dailyGoal?.carbsG ?? null} unit="גר'" />
+            <CircularGauge label="שומן" current={average.fatG} goal={dailyGoal?.fatG ?? null} unit="גר'" />
+            <CircularGauge label="חלבון" current={average.proteinG} goal={dailyGoal?.proteinG ?? null} unit="גר'" />
+          </div>
+        </section>
+      )}
 
       <section>
         <h2 className="mb-3 font-display text-lg font-medium">מגמת משקל (30 יום אחרונים)</h2>

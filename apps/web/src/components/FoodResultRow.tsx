@@ -7,9 +7,9 @@ import { Button } from "@/components/Button";
 type Mode = "g" | "unit";
 
 function macroLine(item: FoodItem): string {
-  return `${Math.round(item.caloriesPer100g)} קל' · פ ${Math.round(item.carbsPer100g)} · ש ${Math.round(
+  return `${Math.round(item.caloriesPer100g)} קל' · פח' ${Math.round(item.carbsPer100g)} · שו ${Math.round(
     item.fatPer100g,
-  )} · ח ${Math.round(item.proteinPer100g)} / 100 גר'`;
+  )} · חל' ${Math.round(item.proteinPer100g)} / 100 גר'`;
 }
 
 export function FoodResultRow({

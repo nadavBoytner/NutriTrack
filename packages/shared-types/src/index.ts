@@ -46,6 +46,7 @@ export interface FoodItem {
 }
 
 export type LogEntrySource = "db" | "manual";
+export type LogEntryUnit = "g" | "portion";
 
 export interface LogEntry {
   id: string;
@@ -55,6 +56,7 @@ export interface LogEntry {
   foodItem: { name: string } | null;
   customName: string | null;
   quantityG: number;
+  quantityUnit: LogEntryUnit;
   calories: number;
   carbsG: number;
   fatG: number;
@@ -65,6 +67,7 @@ export interface LogEntry {
 export interface CreateLogEntryInput {
   date: string;
   quantityG: number;
+  quantityUnit?: LogEntryUnit;
   foodItemId?: string;
   customName?: string;
   calories?: number;

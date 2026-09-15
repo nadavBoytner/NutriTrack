@@ -1,4 +1,4 @@
-import { IsDateString, IsNumber, IsOptional, IsString, IsUUID, Min } from 'class-validator';
+import { IsDateString, IsIn, IsNumber, IsOptional, IsString, IsUUID, Min } from 'class-validator';
 
 export class CreateLogEntryDto {
   @IsDateString()
@@ -7,6 +7,10 @@ export class CreateLogEntryDto {
   @IsNumber()
   @Min(0)
   quantityG!: number;
+
+  @IsOptional()
+  @IsIn(['g', 'portion'])
+  quantityUnit?: 'g' | 'portion';
 
   @IsOptional()
   @IsUUID()

@@ -22,6 +22,11 @@ export class LogEntriesController {
     return this.logEntriesService.findForDate(user.userId, query.date);
   }
 
+  @Get('recent-manual')
+  recentManual(@CurrentUser() user: RequestUser) {
+    return this.logEntriesService.recentManualFoods(user.userId);
+  }
+
   @Put(':id')
   update(@CurrentUser() user: RequestUser, @Param('id') id: string, @Body() dto: UpdateLogEntryDto) {
     return this.logEntriesService.update(user.userId, id, dto);

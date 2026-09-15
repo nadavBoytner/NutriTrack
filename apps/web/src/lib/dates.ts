@@ -24,6 +24,11 @@ export function addDaysISO(dateISO: string, days: number): string {
   return date.toISOString().slice(0, 10);
 }
 
+export function daysBetweenISO(fromISO: string, toISO: string): number {
+  const MS_PER_DAY = 24 * 60 * 60 * 1000;
+  return Math.round((new Date(toISO).getTime() - new Date(fromISO).getTime()) / MS_PER_DAY) + 1;
+}
+
 export function formatHebrewDate(dateISO: string): string {
   const date = new Date(dateISO);
   const weekday = WEEKDAYS[date.getUTCDay()];

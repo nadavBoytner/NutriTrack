@@ -61,20 +61,27 @@ enum LogEntrySource {
   manual
 }
 
+enum LogEntryUnit {
+  g
+  portion
+}
+
 model LogEntry {
-  id         String         @id @default(uuid())
-  userId     String
-  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date       DateTime       @db.Date
-  foodItemId String?
-  foodItem   FoodItem?      @relation(fields: [foodItemId], references: [id])
-  customName String?
-  quantityG  Float
-  calories   Float
-  carbsG     Float
-  fatG       Float
-  proteinG   Float
-  source     LogEntrySource
+  id           String         @id @default(uuid())
+  userId       String
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date         DateTime       @db.Date
+  foodItemId   String?
+  foodItem     FoodItem?      @relation(fields: [foodItemId], references: [id])
+  customName   String?
+  quantityG    Float
+  quantityUnit LogEntryUnit   @default(g)
+  calories     Float
+  carbsG       Float
+  fatG         Float
+  proteinG     Float
+  source       LogEntrySource
+  createdAt    DateTime       @default(now())
 
   @@index([userId, date])
 }

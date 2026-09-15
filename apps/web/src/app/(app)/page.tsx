@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { LogEntry, MacroTotals, NutritionGoal, WeightEntry } from "@foodtrack/shared-types";
 import { deleteLogEntryAction } from "@/app/actions/log";
+import { AiMealParser } from "@/components/AiMealParser";
 import { Button } from "@/components/Button";
 import { CircularGauge } from "@/components/CircularGauge";
 import { FoodSearch } from "@/components/FoodSearch";
@@ -88,7 +89,14 @@ export default async function LogPage(props: PageProps<"/">) {
             {entries.map((entry) => (
               <li key={entry.id} className="flex items-center gap-3 py-2">
                 <div className="min-w-0 flex-1">
-                  <p className="truncate">{entry.customName ?? entry.foodItem?.name ?? "פריט"}</p>
+                  <p className="truncate">
+                    {entry.customName ?? entry.foodItem?.name ?? "פריט"}
+                    {entry.source === "ai_estimated" && (
+                      <span className="mr-2 inline-block rounded bg-highlight-soft px-1.5 py-0.5 align-middle text-[11px] text-highlight">
+                        הערכת AI
+                      </span>
+                    )}
+                  </p>
                   <p className="text-xs tabular-nums text-ink-soft">
                     {Math.round(entry.quantityG)} {entry.quantityUnit === "portion" ? "מנות" : "גר'"} ·{" "}
                     {Math.round(entry.calories)} קל&apos; · פח&apos; {Math.round(entry.carbsG)} · שו{" "}
@@ -107,6 +115,7 @@ export default async function LogPage(props: PageProps<"/">) {
           <p className="mb-4 text-sm text-ink-soft">עדיין לא נרשמו פריטים ליום הזה.</p>
         )}
 
+        <AiMealParser date={date} />
         <FoodSearch date={date} />
         <ManualEntryForm date={date} recentFoods={recentManualFoods} />
       </section>

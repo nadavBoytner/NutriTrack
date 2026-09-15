@@ -1,8 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import type { FoodItem, LogEntry, LogEntryUnit, UpsertWeightEntryInput, WeightEntry } from "@foodtrack/shared-types";
-import { apiFetch } from "@/lib/api";
+import type {
+  AiParsedItem,
+  FoodItem,
+  LogEntry,
+  LogEntryUnit,
+  UpsertWeightEntryInput,
+  WeightEntry,
+} from "@foodtrack/shared-types";
+import { ApiError, apiFetch } from "@/lib/api";
 import { requireToken } from "@/lib/auth";
 
 export async function searchFoodItemsAction(query: string): Promise<FoodItem[]> {
@@ -18,6 +25,49 @@ export async function addFoodLogEntryAction(date: string, foodItemId: string, qu
     token,
     body: { date, foodItemId, quantityG },
   });
+  revalidatePath("/");
+}
+
+export async function parseMealTextAction(text: string): Promise<{ items?: AiParsedItem[]; error?: string }> {
+  const token = await requireToken();
+  if (!text.trim()) return { items: [] };
+  try {
+    const items = await apiFetch<AiParsedItem[]>("/log-entries/ai-parse", {
+      method: "POST",
+      token,
+      body: { text },
+    });
+    return { items };
+  } catch (error) {
+    if (error instanceof ApiError) return { error: error.message };
+    throw error;
+  }
+}
+
+export async function confirmAiParsedItemAction(date: string, item: AiParsedItem): Promise<void> {
+  const token = await requireToken();
+  if (item.foodItemId) {
+    await apiFetch<LogEntry>("/log-entries", {
+      method: "POST",
+      token,
+      body: { date, foodItemId: item.foodItemId, quantityG: item.quantityG },
+    });
+  } else {
+    await apiFetch<LogEntry>("/log-entries", {
+      method: "POST",
+      token,
+      body: {
+        date,
+        customName: item.customName,
+        source: "ai_estimated",
+        quantityG: item.quantityG,
+        calories: item.calories,
+        carbsG: item.carbsG,
+        fatG: item.fatG,
+        proteinG: item.proteinG,
+      },
+    });
+  }
   revalidatePath("/");
 }
 

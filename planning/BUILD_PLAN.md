@@ -113,7 +113,7 @@ Each phase below lists: what it covers, why it matters, the concrete to-do list,
 
 ---
 
-### Phase 4 — Web Dashboard (first client) — Not started
+### Phase 4 — Web Dashboard (first client) — ✅ Done
 
 **Description:** The first real UI, proving the full MVP flow end-to-end against the backend built in Phases 1–3.
 
@@ -131,7 +131,7 @@ Each phase below lists: what it covers, why it matters, the concrete to-do list,
 
 ---
 
-### Phase 5 — AI Free-Text Meal Parsing — Not started
+### Phase 5 — AI Free-Text Meal Parsing — ✅ Done
 
 **Description:** The highest-risk feature, deliberately built last and validated against an already-working system rather than in isolation.
 

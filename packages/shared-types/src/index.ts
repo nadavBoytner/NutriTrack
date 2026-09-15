@@ -45,7 +45,7 @@ export interface FoodItem {
   barcode: string | null;
 }
 
-export type LogEntrySource = "db" | "manual";
+export type LogEntrySource = "db" | "manual" | "ai_estimated";
 export type LogEntryUnit = "g" | "portion";
 
 export interface LogEntry {
@@ -70,10 +70,22 @@ export interface CreateLogEntryInput {
   quantityUnit?: LogEntryUnit;
   foodItemId?: string;
   customName?: string;
+  source?: "manual" | "ai_estimated";
   calories?: number;
   carbsG?: number;
   fatG?: number;
   proteinG?: number;
+}
+
+export interface AiParsedItem {
+  customName: string;
+  foodItemId: string | null;
+  quantityG: number;
+  calories: number;
+  carbsG: number;
+  fatG: number;
+  proteinG: number;
+  source: "db" | "ai_estimated";
 }
 
 export interface UpdateLogEntryInput {

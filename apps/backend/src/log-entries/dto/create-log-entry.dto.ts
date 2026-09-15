@@ -21,6 +21,10 @@ export class CreateLogEntryDto {
   customName?: string;
 
   @IsOptional()
+  @IsIn(['manual', 'ai_estimated'])
+  source?: 'manual' | 'ai_estimated';
+
+  @IsOptional()
   @IsNumber()
   @Min(0)
   calories?: number;

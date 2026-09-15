@@ -59,6 +59,7 @@ model FoodItem {
 enum LogEntrySource {
   db
   manual
+  ai_estimated
 }
 
 enum LogEntryUnit {

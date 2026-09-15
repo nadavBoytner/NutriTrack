@@ -7,5 +7,6 @@ import { FoodItemsService } from './food-items.service.js';
   imports: [AuthModule],
   controllers: [FoodItemsController],
   providers: [FoodItemsService],
+  exports: [FoodItemsService],
 })
 export class FoodItemsModule {}

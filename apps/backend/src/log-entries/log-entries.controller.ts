@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } fro
 import { CurrentUser } from '../auth/current-user.decorator.js';
 import type { RequestUser } from '../auth/current-user.decorator.js';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { AiParseDto } from './dto/ai-parse.dto.js';
 import { CreateLogEntryDto } from './dto/create-log-entry.dto.js';
 import { QueryLogEntriesDto } from './dto/query-log-entries.dto.js';
 import { UpdateLogEntryDto } from './dto/update-log-entry.dto.js';
@@ -25,6 +26,11 @@ export class LogEntriesController {
   @Get('recent-manual')
   recentManual(@CurrentUser() user: RequestUser) {
     return this.logEntriesService.recentManualFoods(user.userId);
+  }
+
+  @Post('ai-parse')
+  aiParse(@Body() dto: AiParseDto) {
+    return this.logEntriesService.aiParse(dto.text);
   }
 
   @Put(':id')

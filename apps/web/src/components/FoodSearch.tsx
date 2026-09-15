@@ -48,11 +48,15 @@ export function FoodSearch({ date }: { date: string }) {
       {error && <p className="mt-2 text-sm text-warn">{error}</p>}
 
       {results.length > 0 && (
-        <ul className="mt-3 max-h-96 divide-y divide-line overflow-y-auto border-y border-line">
-          {results.map((item) => (
-            <FoodResultRow key={item.id} item={item} disabled={isPending} onAdd={handleAdd} />
-          ))}
-        </ul>
+        <div className="mt-3 max-h-96 overflow-auto border-y border-line">
+          <table className="w-full min-w-[420px] border-collapse text-sm">
+            <tbody>
+              {results.map((item) => (
+                <FoodResultRow key={item.id} item={item} disabled={isPending} onAdd={handleAdd} />
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

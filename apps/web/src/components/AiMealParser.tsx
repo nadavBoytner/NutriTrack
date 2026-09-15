@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, type KeyboardEvent } from "react";
 import type { AiParsedItem } from "@foodtrack/shared-types";
 import { confirmAiParsedItemAction, parseMealTextAction } from "@/app/actions/log";
 import { Button } from "@/components/Button";
@@ -37,6 +37,7 @@ export function AiMealParser({ date }: { date: string }) {
   const [isPending, startTransition] = useTransition();
 
   function handleParse() {
+    if (!text.trim() || isPending) return;
     setError(null);
     startTransition(async () => {
       const result = await parseMealTextAction(text);
@@ -46,6 +47,13 @@ export function AiMealParser({ date }: { date: string }) {
       }
       setDrafts((result.items ?? []).map(toDraft));
     });
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      handleParse();
+    }
   }
 
   function updateDraft(key: string, patch: Partial<DraftItem>) {
@@ -84,7 +92,8 @@ export function AiMealParser({ date }: { date: string }) {
       <textarea
         value={text}
         onChange={(event) => setText(event.target.value)}
-        placeholder="ספר/י בחופשיות, למשל: אכלתי סלט עוף וכוס אורז"
+        onKeyDown={handleKeyDown}
+        placeholder="ספר/י בחופשיות, למשל: אכלתי סלט עוף וכוס אורז (Enter לשליחה, Shift+Enter לשורה חדשה)"
         rows={2}
         className="w-full resize-none border-0 border-b border-line bg-transparent py-2 text-base focus:border-good focus:outline-none"
       />
@@ -98,68 +107,91 @@ export function AiMealParser({ date }: { date: string }) {
 
       {drafts.length > 0 && (
         <div className="mt-4 space-y-3">
-          <ul className="divide-y divide-line border-y border-line">
-            {drafts.map((item) => (
-              <li key={item.key} className="flex flex-wrap items-center gap-3 py-3">
-                <div className="min-w-0 flex-1 basis-40">
-                  <input
-                    value={item.customName}
-                    onChange={(event) => updateDraft(item.key, { customName: event.target.value })}
-                    className="w-full border-0 border-b border-line bg-transparent focus:border-good focus:outline-none"
-                  />
-                  <span
-                    className={`mt-1 inline-block rounded px-1.5 py-0.5 text-[11px] ${
-                      item.source === "db" ? "bg-good-soft text-good" : "bg-highlight-soft text-highlight"
-                    }`}
-                  >
-                    {item.source === "db" ? "מהמאגר" : "הערכת AI"}
-                  </span>
-                </div>
+          <div className="overflow-x-auto border-y border-line">
+            <table className="w-full min-w-[560px] border-collapse text-sm">
+              <thead>
+                <tr className="border-b-2 border-ink text-xs text-ink-soft">
+                  <th className="py-2 text-start font-normal">מאכל</th>
+                  <th className="py-2 text-start font-normal">כמות</th>
+                  <th className="py-2 text-start font-normal">קל&apos;</th>
+                  <th className="py-2 text-start font-normal">פח&apos;</th>
+                  <th className="py-2 text-start font-normal">שו</th>
+                  <th className="py-2 text-start font-normal">חל&apos;</th>
+                  <th className="py-2" aria-hidden />
+                </tr>
+              </thead>
+              <tbody>
+                {drafts.map((item) => (
+                  <tr key={item.key} className="border-b border-line last:border-b-0">
+                    <td className="max-w-40 py-2.5 pe-2 align-top">
+                      <input
+                        value={item.customName}
+                        onChange={(event) => updateDraft(item.key, { customName: event.target.value })}
+                        className="w-full border-0 border-b border-line bg-transparent focus:border-good focus:outline-none"
+                      />
+                      <span
+                        className={`mt-1 inline-block rounded px-1.5 py-0.5 text-[11px] ${
+                          item.source === "db" ? "bg-good-soft text-good" : "bg-highlight-soft text-highlight"
+                        }`}
+                      >
+                        {item.source === "db" ? "מהמאגר" : "הערכת AI"}
+                      </span>
+                    </td>
 
-                <div className="flex items-center gap-1">
-                  <input
-                    type="number"
-                    min={1}
-                    value={Math.round(item.quantityG)}
-                    onChange={(event) => handleQuantityChange(item, Number(event.target.value))}
-                    className="w-16 border-0 border-b border-line bg-transparent text-center tabular-nums focus:border-good focus:outline-none"
-                  />
-                  <span className="text-xs text-ink-soft">גר&apos;</span>
-                </div>
+                    <td className="py-2.5 pe-2 align-top">
+                      <input
+                        type="number"
+                        min={1}
+                        value={Math.round(item.quantityG)}
+                        onChange={(event) => handleQuantityChange(item, Number(event.target.value))}
+                        className="w-16 border-0 border-b border-line bg-transparent text-center tabular-nums focus:border-good focus:outline-none"
+                      />
+                    </td>
 
-                <div className="flex items-center gap-2 text-xs tabular-nums text-ink-soft">
-                  <MacroInput
-                    label="קל'"
-                    value={item.calories}
-                    disabled={item.source === "db"}
-                    onChange={(value) => updateDraft(item.key, { calories: value })}
-                  />
-                  <MacroInput
-                    label="פח'"
-                    value={item.carbsG}
-                    disabled={item.source === "db"}
-                    onChange={(value) => updateDraft(item.key, { carbsG: value })}
-                  />
-                  <MacroInput
-                    label="שו"
-                    value={item.fatG}
-                    disabled={item.source === "db"}
-                    onChange={(value) => updateDraft(item.key, { fatG: value })}
-                  />
-                  <MacroInput
-                    label="חל'"
-                    value={item.proteinG}
-                    disabled={item.source === "db"}
-                    onChange={(value) => updateDraft(item.key, { proteinG: value })}
-                  />
-                </div>
+                    <td className="py-2.5 pe-2 align-top">
+                      <MacroInput
+                        value={item.calories}
+                        disabled={item.source === "db"}
+                        onChange={(value) => updateDraft(item.key, { calories: value })}
+                      />
+                    </td>
+                    <td className="py-2.5 pe-2 align-top">
+                      <MacroInput
+                        value={item.carbsG}
+                        disabled={item.source === "db"}
+                        onChange={(value) => updateDraft(item.key, { carbsG: value })}
+                      />
+                    </td>
+                    <td className="py-2.5 pe-2 align-top">
+                      <MacroInput
+                        value={item.fatG}
+                        disabled={item.source === "db"}
+                        onChange={(value) => updateDraft(item.key, { fatG: value })}
+                      />
+                    </td>
+                    <td className="py-2.5 pe-2 align-top">
+                      <MacroInput
+                        value={item.proteinG}
+                        disabled={item.source === "db"}
+                        onChange={(value) => updateDraft(item.key, { proteinG: value })}
+                      />
+                    </td>
 
-                <Button type="button" variant="danger" onClick={() => removeDraft(item.key)}>
-                  הסרה
-                </Button>
-              </li>
-            ))}
-          </ul>
+                    <td className="py-2.5 align-top text-end">
+                      <button
+                        type="button"
+                        aria-label="הסרה"
+                        onClick={() => removeDraft(item.key)}
+                        className="rounded px-1.5 py-0.5 text-ink-soft transition-colors hover:bg-warn-soft hover:text-warn"
+                      >
+                        ✕
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           <Button type="button" disabled={isPending} onClick={handleConfirm}>
             {isPending ? "מוסיף..." : "אישור והוספה"}
@@ -171,28 +203,23 @@ export function AiMealParser({ date }: { date: string }) {
 }
 
 function MacroInput({
-  label,
   value,
   disabled,
   onChange,
 }: {
-  label: string;
   value: number;
   disabled: boolean;
   onChange: (value: number) => void;
 }) {
   return (
-    <label className="flex items-center gap-1">
-      <span>{label}</span>
-      <input
-        type="number"
-        min={0}
-        step="0.1"
-        value={Math.round(value * 10) / 10}
-        disabled={disabled}
-        onChange={(event) => onChange(Number(event.target.value))}
-        className="w-12 border-0 border-b border-line bg-transparent text-center focus:border-good focus:outline-none disabled:text-ink-soft"
-      />
-    </label>
+    <input
+      type="number"
+      min={0}
+      step="0.1"
+      value={Math.round(value * 10) / 10}
+      disabled={disabled}
+      onChange={(event) => onChange(Number(event.target.value))}
+      className="w-14 border-0 border-b border-line bg-transparent text-center tabular-nums focus:border-good focus:outline-none disabled:text-ink-soft"
+    />
   );
 }

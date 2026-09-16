@@ -6,11 +6,17 @@
     "@expo-google-fonts/frank-ruhl-libre": "^0.4.1",
     "@expo-google-fonts/heebo": "^0.4.2",
     "@expo/cli": "^57.0.25",
+    "@expo/devtools": "^57.0.1",
+    "@expo/fingerprint": "^0.20.13",
+    "@expo/local-build-cache-provider": "^57.0.8",
     "@foodtrack/shared-types": "*",
+    "@ungap/structured-clone": "^1.4.0",
     "expo": "~57.0.22",
     "expo-asset": "~57.0.17",
     "expo-constants": "~57.0.18",
+    "expo-file-system": "^57.0.7",
     "expo-font": "~57.0.4",
+    "expo-keep-awake": "^57.0.2",
     "expo-linking": "~57.0.10",
     "expo-modules-core": "~57.0.18",
     "expo-router": "~57.0.21",
@@ -23,7 +29,8 @@
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
     "react-native-svg": "15.15.4",
-    "react-native-web": "^0.21.2"
+    "react-native-web": "^0.21.2",
+    "whatwg-url-minimum": "^0.2.0"
   },
   "devDependencies": {
     "@types/node": "^26.6.0",

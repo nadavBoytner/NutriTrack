@@ -18,6 +18,11 @@ const GOAL_LABELS: Record<GoalType, string> = {
 export default function ProfileScreen() {
   const { token, signOut } = useAuth();
 
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [goal, setGoal] = useState<NutritionGoal | null>(null);
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [editingGoal, setEditingGoal] = useState(false);
+
   const [age, setAge] = useState("");
   const [heightCm, setHeightCm] = useState("");
   const [weightKg, setWeightKg] = useState("");
@@ -33,27 +38,55 @@ export default function ProfileScreen() {
   const [goalSaving, setGoalSaving] = useState(false);
 
   useEffect(() => {
-    apiFetch<Profile | null>("/profile", { token }).then((profile) => {
-      if (!profile) return;
+    apiFetch<Profile | null>("/profile", { token }).then((p) => {
+      setProfile(p);
+      setEditingProfile(!p);
+      if (p) {
+        setAge(p.age !== null ? String(p.age) : "");
+        setHeightCm(p.heightCm !== null ? String(p.heightCm) : "");
+        setWeightKg(p.weightKg !== null ? String(p.weightKg) : "");
+        setGoalType(p.goalType);
+      }
+    });
+    apiFetch<NutritionGoal | null>("/nutrition-goals", { token }).then((g) => {
+      setGoal(g);
+      setEditingGoal(!g);
+      if (g) {
+        setDailyCalories(String(g.dailyCalories));
+        setDailyCarbsG(String(g.dailyCarbsG));
+        setDailyFatG(String(g.dailyFatG));
+        setDailyProteinG(String(g.dailyProteinG));
+      }
+    });
+  }, [token]);
+
+  function startEditProfile() {
+    if (profile) {
       setAge(profile.age !== null ? String(profile.age) : "");
       setHeightCm(profile.heightCm !== null ? String(profile.heightCm) : "");
       setWeightKg(profile.weightKg !== null ? String(profile.weightKg) : "");
       setGoalType(profile.goalType);
-    });
-    apiFetch<NutritionGoal | null>("/nutrition-goals", { token }).then((goal) => {
-      if (!goal) return;
+    }
+    setProfileError(null);
+    setEditingProfile(true);
+  }
+
+  function startEditGoal() {
+    if (goal) {
       setDailyCalories(String(goal.dailyCalories));
       setDailyCarbsG(String(goal.dailyCarbsG));
       setDailyFatG(String(goal.dailyFatG));
       setDailyProteinG(String(goal.dailyProteinG));
-    });
-  }, [token]);
+    }
+    setGoalError(null);
+    setEditingGoal(true);
+  }
 
   async function handleSaveProfile() {
     setProfileError(null);
     setProfileSaving(true);
     try {
-      await apiFetch<Profile>("/profile", {
+      const updated = await apiFetch<Profile>("/profile", {
         method: "PUT",
         token,
         body: {
@@ -63,6 +96,8 @@ export default function ProfileScreen() {
           goalType: goalType ?? undefined,
         },
       });
+      setProfile(updated);
+      setEditingProfile(false);
     } catch (err) {
       setProfileError(err instanceof ApiError ? err.message : "אירעה שגיאה, נסו שוב");
     } finally {
@@ -74,7 +109,7 @@ export default function ProfileScreen() {
     setGoalError(null);
     setGoalSaving(true);
     try {
-      await apiFetch<NutritionGoal>("/nutrition-goals", {
+      const updated = await apiFetch<NutritionGoal>("/nutrition-goals", {
         method: "PUT",
         token,
         body: {
@@ -84,6 +119,8 @@ export default function ProfileScreen() {
           dailyProteinG: Number(dailyProteinG),
         },
       });
+      setGoal(updated);
+      setEditingGoal(false);
     } catch (err) {
       setGoalError(err instanceof ApiError ? err.message : "אירעה שגיאה, נסו שוב");
     } finally {
@@ -93,73 +130,134 @@ export default function ProfileScreen() {
 
   return (
     <Screen>
-      <Text style={styles.heading}>פרופיל</Text>
-
-      <View style={styles.row}>
-        <View style={styles.rowItem}>
-          <Field label="גיל">
-            <Input value={age} onChangeText={setAge} keyboardType="number-pad" />
-          </Field>
-        </View>
-        <View style={styles.rowItem}>
-          <Field label="גובה (ס&quot;מ)">
-            <Input value={heightCm} onChangeText={setHeightCm} keyboardType="number-pad" />
-          </Field>
-        </View>
-      </View>
-      <View style={styles.row}>
-        <View style={styles.rowItem}>
-          <Field label="משקל (ק&quot;ג)">
-            <Input value={weightKg} onChangeText={setWeightKg} keyboardType="decimal-pad" />
-          </Field>
-        </View>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.heading}>פרופיל</Text>
+        {!editingProfile && (
+          <Pressable onPress={startEditProfile}>
+            <Text style={styles.editLink}>עריכה</Text>
+          </Pressable>
+        )}
       </View>
 
-      <Field label="מטרה">
-        <View style={styles.chips}>
-          {(Object.entries(GOAL_LABELS) as [GoalType, string][]).map(([value, label]) => (
-            <Pressable
-              key={value}
-              onPress={() => setGoalType(value)}
-              style={[styles.chip, goalType === value && styles.chipActive]}
-            >
-              <Text style={[styles.chipLabel, goalType === value && styles.chipLabelActive]}>{label}</Text>
-            </Pressable>
-          ))}
-        </View>
-      </Field>
+      {editingProfile ? (
+        <>
+          <View style={styles.row}>
+            <View style={styles.rowItem}>
+              <Field label="גיל">
+                <Input value={age} onChangeText={setAge} keyboardType="number-pad" />
+              </Field>
+            </View>
+            <View style={styles.rowItem}>
+              <Field label="גובה (ס&quot;מ)">
+                <Input value={heightCm} onChangeText={setHeightCm} keyboardType="number-pad" />
+              </Field>
+            </View>
+          </View>
+          <View style={styles.row}>
+            <View style={styles.rowItem}>
+              <Field label="משקל (ק&quot;ג)">
+                <Input value={weightKg} onChangeText={setWeightKg} keyboardType="decimal-pad" />
+              </Field>
+            </View>
+          </View>
 
-      {profileError && <Text style={styles.error}>{profileError}</Text>}
-      <Button label="שמירת פרופיל" loading={profileSaving} onPress={handleSaveProfile} />
+          <Field label="מטרה">
+            <View style={styles.chips}>
+              {(Object.entries(GOAL_LABELS) as [GoalType, string][]).map(([value, label]) => (
+                <Pressable
+                  key={value}
+                  onPress={() => setGoalType(value)}
+                  style={[styles.chip, goalType === value && styles.chipActive]}
+                >
+                  <Text style={[styles.chipLabel, goalType === value && styles.chipLabelActive]}>{label}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </Field>
+
+          {profileError && <Text style={styles.error}>{profileError}</Text>}
+          <View style={styles.actionsRow}>
+            <Button label="שמירת פרופיל" loading={profileSaving} onPress={handleSaveProfile} />
+            {profile && (
+              <Pressable
+                onPress={() => {
+                  setEditingProfile(false);
+                  setProfileError(null);
+                }}
+              >
+                <Text style={styles.cancelLink}>ביטול</Text>
+              </Pressable>
+            )}
+          </View>
+        </>
+      ) : (
+        <View style={styles.summary}>
+          <SummaryRow label="גיל" value={profile?.age != null ? String(profile.age) : "—"} />
+          <SummaryRow label="גובה" value={profile?.heightCm != null ? `${profile.heightCm} ס"מ` : "—"} />
+          <SummaryRow label="משקל" value={profile?.weightKg != null ? `${profile.weightKg} ק"ג` : "—"} />
+          <SummaryRow label="מטרה" value={profile?.goalType ? GOAL_LABELS[profile.goalType] : "—"} />
+        </View>
+      )}
 
       <View style={styles.section}>
-        <Text style={styles.sectionHeading}>יעדי תזונה יומיים</Text>
-        <View style={styles.row}>
-          <View style={styles.rowItem}>
-            <Field label="קלוריות ליום">
-              <Input value={dailyCalories} onChangeText={setDailyCalories} keyboardType="number-pad" />
-            </Field>
-          </View>
-          <View style={styles.rowItem}>
-            <Field label="פחמימות (גר')">
-              <Input value={dailyCarbsG} onChangeText={setDailyCarbsG} keyboardType="number-pad" />
-            </Field>
-          </View>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionHeading}>יעדי תזונה יומיים</Text>
+          {!editingGoal && (
+            <Pressable onPress={startEditGoal}>
+              <Text style={styles.editLink}>עריכה</Text>
+            </Pressable>
+          )}
         </View>
-        <View style={styles.row}>
-          <View style={styles.rowItem}>
-            <Field label="שומן (גר')">
-              <Input value={dailyFatG} onChangeText={setDailyFatG} keyboardType="number-pad" />
-            </Field>
+
+        {editingGoal ? (
+          <>
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <Field label="קלוריות ליום">
+                  <Input value={dailyCalories} onChangeText={setDailyCalories} keyboardType="number-pad" />
+                </Field>
+              </View>
+              <View style={styles.rowItem}>
+                <Field label="פחמימות (גר')">
+                  <Input value={dailyCarbsG} onChangeText={setDailyCarbsG} keyboardType="number-pad" />
+                </Field>
+              </View>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.rowItem}>
+                <Field label="שומן (גר')">
+                  <Input value={dailyFatG} onChangeText={setDailyFatG} keyboardType="number-pad" />
+                </Field>
+              </View>
+              <View style={styles.rowItem}>
+                <Field label="חלבון (גר')">
+                  <Input value={dailyProteinG} onChangeText={setDailyProteinG} keyboardType="number-pad" />
+                </Field>
+              </View>
+            </View>
+            {goalError && <Text style={styles.error}>{goalError}</Text>}
+            <View style={styles.actionsRow}>
+              <Button label="שמירת יעדים" loading={goalSaving} onPress={handleSaveGoal} />
+              {goal && (
+                <Pressable
+                  onPress={() => {
+                    setEditingGoal(false);
+                    setGoalError(null);
+                  }}
+                >
+                  <Text style={styles.cancelLink}>ביטול</Text>
+                </Pressable>
+              )}
+            </View>
+          </>
+        ) : (
+          <View style={styles.summary}>
+            <SummaryRow label="קלוריות ליום" value={goal ? String(goal.dailyCalories) : "—"} />
+            <SummaryRow label="פחמימות" value={goal ? `${goal.dailyCarbsG} גר'` : "—"} />
+            <SummaryRow label="שומן" value={goal ? `${goal.dailyFatG} גר'` : "—"} />
+            <SummaryRow label="חלבון" value={goal ? `${goal.dailyProteinG} גר'` : "—"} />
           </View>
-          <View style={styles.rowItem}>
-            <Field label="חלבון (גר')">
-              <Input value={dailyProteinG} onChangeText={setDailyProteinG} keyboardType="number-pad" />
-            </Field>
-          </View>
-        </View>
-        {goalError && <Text style={styles.error}>{goalError}</Text>}
-        <Button label="שמירת יעדים" loading={goalSaving} onPress={handleSaveGoal} />
+        )}
       </View>
 
       <View style={styles.section}>
@@ -169,13 +267,39 @@ export default function ProfileScreen() {
   );
 }
 
+function SummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.summaryRow}>
+      <Text style={styles.summaryValue}>{value}</Text>
+      <Text style={styles.summaryLabel}>{label}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  sectionHeader: {
+    flexDirection: "row-reverse",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
   heading: {
     fontFamily: fonts.displayBold,
     fontSize: 20,
     color: colors.ink,
     textAlign: "right",
-    marginBottom: 16,
+  },
+  editLink: {
+    fontFamily: fonts.sans,
+    fontSize: 13,
+    color: colors.link,
+    textDecorationLine: "underline",
+  },
+  cancelLink: {
+    fontFamily: fonts.sans,
+    fontSize: 13,
+    color: colors.inkSoft,
+    textDecorationLine: "underline",
   },
   row: {
     flexDirection: "row-reverse",
@@ -216,6 +340,31 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     textAlign: "right",
   },
+  actionsRow: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    gap: 16,
+  },
+  summary: {
+    gap: 2,
+  },
+  summaryRow: {
+    flexDirection: "row-reverse",
+    justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderBottomColor: colors.line,
+    paddingVertical: 10,
+  },
+  summaryLabel: {
+    fontFamily: fonts.sans,
+    fontSize: 13,
+    color: colors.inkSoft,
+  },
+  summaryValue: {
+    fontFamily: fonts.sansMedium,
+    fontSize: 13,
+    color: colors.ink,
+  },
   section: {
     borderTopWidth: 1,
     borderTopColor: colors.line,
@@ -228,6 +377,5 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: colors.ink,
     textAlign: "right",
-    marginBottom: 12,
   },
 });

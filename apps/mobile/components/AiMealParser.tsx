@@ -3,7 +3,7 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import type { AiParsedItem } from "@foodtrack/shared-types";
 import { Button } from "@/components/Button";
 import { RemoveButton } from "@/components/RemoveButton";
-import { Cell, COL, HeaderCell, HeaderRow, Row, TableWrap } from "@/components/Table";
+import { ACTION_WIDTH, Cell, COL, HeaderCell, HeaderRow, Row, TableWrap } from "@/components/Table";
 import { apiFetch, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { colors } from "@/lib/colors";
@@ -139,17 +139,17 @@ export function AiMealParser({ date, onAdded }: { date: string; onAdded: () => v
         <View style={styles.draftsWrap}>
           <TableWrap>
             <HeaderRow>
-              <HeaderCell width={COL.name}>מאכל</HeaderCell>
-              <HeaderCell width={COL.qty}>כמות</HeaderCell>
-              <HeaderCell width={COL.macro}>קל&apos;</HeaderCell>
-              <HeaderCell width={COL.macro}>פח&apos;</HeaderCell>
-              <HeaderCell width={COL.macro}>שו</HeaderCell>
-              <HeaderCell width={COL.macro}>חל&apos;</HeaderCell>
-              <HeaderCell width={COL.action}> </HeaderCell>
+              <HeaderCell flex={COL.name}>מאכל</HeaderCell>
+              <HeaderCell flex={COL.qty}>כמות</HeaderCell>
+              <HeaderCell flex={COL.macro}>קל&apos;</HeaderCell>
+              <HeaderCell flex={COL.macro}>פח&apos;</HeaderCell>
+              <HeaderCell flex={COL.macro}>שו</HeaderCell>
+              <HeaderCell flex={COL.macro}>חל&apos;</HeaderCell>
+              <HeaderCell width={ACTION_WIDTH}> </HeaderCell>
             </HeaderRow>
             {drafts.map((item) => (
               <Row key={item.key}>
-                <Cell width={COL.name}>
+                <Cell flex={COL.name}>
                   <TextInput
                     value={item.customName}
                     onChangeText={(v) => updateDraft(item.key, { customName: v })}
@@ -160,7 +160,7 @@ export function AiMealParser({ date, onAdded }: { date: string; onAdded: () => v
                     {item.source === "db" ? "מהמאגר" : "הערכת AI"}
                   </Text>
                 </Cell>
-                <Cell width={COL.qty}>
+                <Cell flex={COL.qty}>
                   <TextInput
                     value={String(Math.round(item.quantityG))}
                     onChangeText={(v) => handleQuantityChange(item, Number(v) || 0)}
@@ -169,35 +169,35 @@ export function AiMealParser({ date, onAdded }: { date: string; onAdded: () => v
                     style={styles.cellInput}
                   />
                 </Cell>
-                <Cell width={COL.macro}>
+                <Cell flex={COL.macro}>
                   <MacroCell
                     value={item.calories}
                     editable={item.source !== "db"}
                     onChange={(v) => updateDraft(item.key, { calories: v })}
                   />
                 </Cell>
-                <Cell width={COL.macro}>
+                <Cell flex={COL.macro}>
                   <MacroCell
                     value={item.carbsG}
                     editable={item.source !== "db"}
                     onChange={(v) => updateDraft(item.key, { carbsG: v })}
                   />
                 </Cell>
-                <Cell width={COL.macro}>
+                <Cell flex={COL.macro}>
                   <MacroCell
                     value={item.fatG}
                     editable={item.source !== "db"}
                     onChange={(v) => updateDraft(item.key, { fatG: v })}
                   />
                 </Cell>
-                <Cell width={COL.macro}>
+                <Cell flex={COL.macro}>
                   <MacroCell
                     value={item.proteinG}
                     editable={item.source !== "db"}
                     onChange={(v) => updateDraft(item.key, { proteinG: v })}
                   />
                 </Cell>
-                <Cell width={COL.action}>
+                <Cell width={ACTION_WIDTH}>
                   <RemoveButton onPress={() => removeDraft(item.key)} />
                 </Cell>
               </Row>

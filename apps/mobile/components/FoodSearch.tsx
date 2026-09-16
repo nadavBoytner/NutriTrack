@@ -3,13 +3,14 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import type { FoodItem } from "@foodtrack/shared-types";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Field";
-import { Cell, COL, HeaderCell, HeaderRow, Row, TableWrap } from "@/components/Table";
+import { Cell, HeaderCell, HeaderRow, Row, TableWrap } from "@/components/Table";
 import { apiFetch, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { colors } from "@/lib/colors";
 import { fonts } from "@/lib/fonts";
 
-const QTY_COL = 130;
+const QTY_COL = 84;
+const ADD_COL = 70;
 
 export function FoodSearch({ date, onAdded }: { date: string; onAdded: () => void }) {
   const { token } = useAuth();
@@ -64,9 +65,9 @@ export function FoodSearch({ date, onAdded }: { date: string; onAdded: () => voi
       {results.length > 0 && (
         <TableWrap>
           <HeaderRow>
-            <HeaderCell width={COL.name}>מאכל</HeaderCell>
+            <HeaderCell flex={1}>מאכל</HeaderCell>
             <HeaderCell width={QTY_COL}>כמות</HeaderCell>
-            <HeaderCell width={COL.action + 30}> </HeaderCell>
+            <HeaderCell width={ADD_COL}> </HeaderCell>
           </HeaderRow>
           {results.map((item) => (
             <FoodResultRow key={item.id} item={item} adding={addingId === item.id} onAdd={handleAdd} />
@@ -90,11 +91,11 @@ function FoodResultRow({
 
   return (
     <Row>
-      <Cell width={COL.name}>
+      <Cell flex={1}>
         <Text style={styles.name} numberOfLines={1}>
           {item.name}
         </Text>
-        <Text style={styles.macroLine}>
+        <Text style={styles.macroLine} numberOfLines={1}>
           {Math.round(item.caloriesPer100g)} קל&apos; · פח&apos; {Math.round(item.carbsPer100g)} · שו{" "}
           {Math.round(item.fatPer100g)} · חל&apos; {Math.round(item.proteinPer100g)} / 100 גר&apos;
         </Text>
@@ -109,8 +110,14 @@ function FoodResultRow({
         />
         <Text style={styles.unit}>גר&apos;</Text>
       </Cell>
-      <Cell width={COL.action + 30}>
-        <Button variant="ghost" label="הוספה" loading={adding} onPress={() => onAdd(item, Number(grams) || 100)} />
+      <Cell width={ADD_COL}>
+        <Button
+          variant="ghost"
+          label="הוספה"
+          loading={adding}
+          onPress={() => onAdd(item, Number(grams) || 100)}
+          style={styles.addButton}
+        />
       </Cell>
     </Row>
   );
@@ -168,5 +175,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.sans,
     fontSize: 12,
     color: colors.inkSoft,
+  },
+  addButton: {
+    paddingHorizontal: 6,
   },
 });

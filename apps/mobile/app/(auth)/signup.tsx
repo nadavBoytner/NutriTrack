@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { Link, type Href } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { Button } from "@/components/Button";
@@ -57,7 +57,7 @@ export default function SignupScreen() {
 
       <View style={authStyles.footer}>
         <Text style={authStyles.footerText}>כבר יש לך חשבון? </Text>
-        <Link href="/(auth)/index" style={authStyles.link}>
+        <Link href={"/(auth)" as Href} style={authStyles.link}>
           להתחברות
         </Link>
       </View>

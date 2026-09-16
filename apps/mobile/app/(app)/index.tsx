@@ -7,7 +7,7 @@ import { FoodSearch } from "@/components/FoodSearch";
 import { ManualEntryForm } from "@/components/ManualEntryForm";
 import { Screen } from "@/components/Screen";
 import { RemoveButton } from "@/components/RemoveButton";
-import { Cell, COL, HeaderCell, HeaderRow, Row, TableWrap } from "@/components/Table";
+import { ACTION_WIDTH, Cell, COL, HeaderCell, HeaderRow, Row, TableWrap } from "@/components/Table";
 import { WeighInForm } from "@/components/WeighInForm";
 import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
@@ -71,40 +71,40 @@ export default function LogScreen() {
         {entries.length > 0 ? (
           <TableWrap>
             <HeaderRow>
-              <HeaderCell width={COL.name}>מאכל</HeaderCell>
-              <HeaderCell width={COL.qty}>כמות</HeaderCell>
-              <HeaderCell width={COL.macro}>קל&apos;</HeaderCell>
-              <HeaderCell width={COL.macro}>פח&apos;</HeaderCell>
-              <HeaderCell width={COL.macro}>שו</HeaderCell>
-              <HeaderCell width={COL.macro}>חל&apos;</HeaderCell>
-              <HeaderCell width={COL.action}> </HeaderCell>
+              <HeaderCell flex={COL.name}>מאכל</HeaderCell>
+              <HeaderCell flex={COL.qty}>כמות</HeaderCell>
+              <HeaderCell flex={COL.macro}>קל&apos;</HeaderCell>
+              <HeaderCell flex={COL.macro}>פח&apos;</HeaderCell>
+              <HeaderCell flex={COL.macro}>שו</HeaderCell>
+              <HeaderCell flex={COL.macro}>חל&apos;</HeaderCell>
+              <HeaderCell width={ACTION_WIDTH}> </HeaderCell>
             </HeaderRow>
             {entries.map((entry) => (
               <Row key={entry.id}>
-                <Cell width={COL.name}>
+                <Cell flex={COL.name}>
                   <Text style={styles.entryName} numberOfLines={1}>
                     {entry.customName ?? entry.foodItem?.name ?? "פריט"}
                   </Text>
                   {entry.source === "ai_estimated" && <Text style={styles.aiBadge}>הערכת AI</Text>}
                 </Cell>
-                <Cell width={COL.qty}>
-                  <Text style={styles.entryValue}>
+                <Cell flex={COL.qty}>
+                  <Text style={styles.entryValue} numberOfLines={1}>
                     {Math.round(entry.quantityG)} {entry.quantityUnit === "portion" ? "מנות" : "גר'"}
                   </Text>
                 </Cell>
-                <Cell width={COL.macro}>
+                <Cell flex={COL.macro}>
                   <Text style={styles.entryValue}>{Math.round(entry.calories)}</Text>
                 </Cell>
-                <Cell width={COL.macro}>
+                <Cell flex={COL.macro}>
                   <Text style={styles.entryValue}>{Math.round(entry.carbsG)}</Text>
                 </Cell>
-                <Cell width={COL.macro}>
+                <Cell flex={COL.macro}>
                   <Text style={styles.entryValue}>{Math.round(entry.fatG)}</Text>
                 </Cell>
-                <Cell width={COL.macro}>
+                <Cell flex={COL.macro}>
                   <Text style={styles.entryValue}>{Math.round(entry.proteinG)}</Text>
                 </Cell>
-                <Cell width={COL.action}>
+                <Cell width={ACTION_WIDTH}>
                   <RemoveButton onPress={() => handleDelete(entry.id)} />
                 </Cell>
               </Row>

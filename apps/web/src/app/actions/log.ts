@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import type {
   AiParsedItem,
   FoodItem,
+  HistoryPage,
   LogEntry,
   LogEntryUnit,
   UpsertWeightEntryInput,
@@ -16,6 +17,12 @@ export async function searchFoodItemsAction(query: string): Promise<FoodItem[]> 
   const token = await requireToken();
   if (!query.trim()) return [];
   return apiFetch<FoodItem[]>(`/food-items/search?q=${encodeURIComponent(query)}`, { token });
+}
+
+export async function getHistoryAction(cursor?: string): Promise<HistoryPage> {
+  const token = await requireToken();
+  const query = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
+  return apiFetch<HistoryPage>(`/log-entries/history${query}`, { token });
 }
 
 export async function addFoodLogEntryAction(date: string, foodItemId: string, quantityG: number): Promise<void> {

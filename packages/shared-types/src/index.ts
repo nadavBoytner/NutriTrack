@@ -124,3 +124,15 @@ export interface MacroReport {
   totals: MacroTotals;
   goal: MacroTotals | null;
 }
+
+export interface DayHistory {
+  date: string;
+  totals: MacroTotals;
+  entryCount: number;
+  weightKg: number | null;
+}
+
+export interface HistoryPage {
+  days: DayHistory[];
+  nextCursor: string | null;
+}

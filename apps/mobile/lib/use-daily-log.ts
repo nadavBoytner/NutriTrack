@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { LogEntry, MacroTotals, NutritionGoal, WeightEntry } from "@foodtrack/shared-types";
-import { apiFetch } from "@/lib/api";
+import { ApiError, apiFetch } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 
 function sumTotals(entries: LogEntry[]): MacroTotals {
@@ -22,10 +22,12 @@ export function useDailyLog(date: string) {
   const [weightEntries, setWeightEntries] = useState<WeightEntry[]>([]);
   const [recentManualFoods, setRecentManualFoods] = useState<LogEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const refetch = useCallback(async () => {
     if (!token) return;
     setLoading(true);
+    setError(null);
     try {
       const [entriesRes, goalRes, weightRes, recentRes] = await Promise.all([
         apiFetch<LogEntry[]>(`/log-entries?date=${date}`, { token }),
@@ -37,6 +39,8 @@ export function useDailyLog(date: string) {
       setGoal(goalRes);
       setWeightEntries(weightRes);
       setRecentManualFoods(recentRes);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "טעינת הנתונים נכשלה, נסו שוב");
     } finally {
       setLoading(false);
     }
@@ -53,6 +57,7 @@ export function useDailyLog(date: string) {
     recentManualFoods,
     totals: sumTotals(entries),
     loading,
+    error,
     refetch,
   };
 }

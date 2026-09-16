@@ -39,26 +39,34 @@ export default function ProfileScreen() {
   const [goalSaving, setGoalSaving] = useState(false);
 
   useEffect(() => {
-    apiFetch<Profile | null>("/profile", { token }).then((p) => {
-      setProfile(p);
-      setEditingProfile(!p);
-      if (p) {
-        setAge(p.age !== null ? String(p.age) : "");
-        setHeightCm(p.heightCm !== null ? String(p.heightCm) : "");
-        setWeightKg(p.weightKg !== null ? String(p.weightKg) : "");
-        setGoalType(p.goalType);
-      }
-    });
-    apiFetch<NutritionGoal | null>("/nutrition-goals", { token }).then((g) => {
-      setGoal(g);
-      setEditingGoal(!g);
-      if (g) {
-        setDailyCalories(String(g.dailyCalories));
-        setDailyCarbsG(String(g.dailyCarbsG));
-        setDailyFatG(String(g.dailyFatG));
-        setDailyProteinG(String(g.dailyProteinG));
-      }
-    });
+    apiFetch<Profile | null>("/profile", { token })
+      .then((p) => {
+        setProfile(p);
+        setEditingProfile(!p);
+        if (p) {
+          setAge(p.age !== null ? String(p.age) : "");
+          setHeightCm(p.heightCm !== null ? String(p.heightCm) : "");
+          setWeightKg(p.weightKg !== null ? String(p.weightKg) : "");
+          setGoalType(p.goalType);
+        }
+      })
+      .catch((err) => {
+        setProfileError(err instanceof ApiError ? err.message : "טעינת הפרופיל נכשלה, נסו שוב");
+      });
+    apiFetch<NutritionGoal | null>("/nutrition-goals", { token })
+      .then((g) => {
+        setGoal(g);
+        setEditingGoal(!g);
+        if (g) {
+          setDailyCalories(String(g.dailyCalories));
+          setDailyCarbsG(String(g.dailyCarbsG));
+          setDailyFatG(String(g.dailyFatG));
+          setDailyProteinG(String(g.dailyProteinG));
+        }
+      })
+      .catch((err) => {
+        setGoalError(err instanceof ApiError ? err.message : "טעינת היעדים נכשלה, נסו שוב");
+      });
   }, [token]);
 
   function startEditProfile() {
@@ -194,6 +202,7 @@ export default function ProfileScreen() {
         </>
       ) : (
         <View style={styles.summary}>
+          {profileError && <Text style={styles.error}>{profileError}</Text>}
           <SummaryRow label="גיל" value={profile?.age != null ? String(profile.age) : "—"} />
           <SummaryRow label="גובה" value={profile?.heightCm != null ? `${profile.heightCm} ס"מ` : "—"} />
           <SummaryRow label="משקל" value={profile?.weightKg != null ? `${profile.weightKg} ק"ג` : "—"} />
@@ -255,6 +264,7 @@ export default function ProfileScreen() {
           </>
         ) : (
           <View style={styles.summary}>
+            {goalError && <Text style={styles.error}>{goalError}</Text>}
             <SummaryRow label="קלוריות ליום" value={goal ? String(goal.dailyCalories) : "—"} />
             <SummaryRow label="פחמימות" value={goal ? `${goal.dailyCarbsG} גר'` : "—"} />
             <SummaryRow label="שומן" value={goal ? `${goal.dailyFatG} גר'` : "—"} />

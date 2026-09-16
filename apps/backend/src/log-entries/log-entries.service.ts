@@ -9,6 +9,17 @@ function scale(per100g: number, quantityG: number): number {
   return (per100g * quantityG) / 100;
 }
 
+function toDateOnly(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+export interface DayHistory {
+  date: string;
+  totals: { calories: number; carbsG: number; fatG: number; proteinG: number };
+  entryCount: number;
+  weightKg: number | null;
+}
+
 export interface AiParsedItem {
   customName: string;
   foodItemId: string | null;
@@ -119,6 +130,64 @@ export class LogEntriesService {
       distinct: ['customName'],
       take: 8,
     });
+  }
+
+  async getHistory(userId: string, cursor: string | undefined, limit: number): Promise<{
+    days: DayHistory[];
+    nextCursor: string | null;
+  }> {
+    const before = cursor ?? '9999-12-31';
+
+    const dateRows = await this.prisma.$queryRaw<{ date: Date }[]>`
+      SELECT date FROM (
+        SELECT DISTINCT date FROM "LogEntry" WHERE "userId" = ${userId}
+        UNION
+        SELECT DISTINCT date FROM "WeightEntry" WHERE "userId" = ${userId}
+      ) AS d
+      WHERE date < ${before}::date
+      ORDER BY date DESC
+      LIMIT ${limit}
+    `;
+
+    if (dateRows.length === 0) {
+      return { days: [], nextCursor: null };
+    }
+
+    const dates = dateRows.map((row) => row.date);
+
+    const [grouped, weights] = await Promise.all([
+      this.prisma.logEntry.groupBy({
+        by: ['date'],
+        where: { userId, date: { in: dates } },
+        _sum: { calories: true, carbsG: true, fatG: true, proteinG: true },
+        _count: { _all: true },
+      }),
+      this.prisma.weightEntry.findMany({ where: { userId, date: { in: dates } } }),
+    ]);
+
+    const totalsByDate = new Map(grouped.map((g) => [toDateOnly(g.date), g]));
+    const weightByDate = new Map(weights.map((w) => [toDateOnly(w.date), w.weightKg]));
+
+    const days = dates.map((date): DayHistory => {
+      const key = toDateOnly(date);
+      const g = totalsByDate.get(key);
+      return {
+        date: key,
+        totals: {
+          calories: g?._sum.calories ?? 0,
+          carbsG: g?._sum.carbsG ?? 0,
+          fatG: g?._sum.fatG ?? 0,
+          proteinG: g?._sum.proteinG ?? 0,
+        },
+        entryCount: g?._count._all ?? 0,
+        weightKg: weightByDate.get(key) ?? null,
+      };
+    });
+
+    return {
+      days,
+      nextCursor: dates.length === limit ? toDateOnly(dates[dates.length - 1]) : null,
+    };
   }
 
   findForDate(userId: string, date: string) {

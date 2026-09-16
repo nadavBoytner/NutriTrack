@@ -6,7 +6,7 @@ import { CircularGauge } from "@/components/CircularGauge";
 import { GlassPanel } from "@/components/GlassPanel";
 import { Screen } from "@/components/Screen";
 import { WeightTrendChart } from "@/components/WeightTrendChart";
-import { apiFetch } from "@/lib/api";
+import { ApiError, apiFetch } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { colors } from "@/lib/colors";
 import { addDaysISO, daysBetweenISO, todayISO } from "@/lib/dates";
@@ -23,23 +23,30 @@ export default function ReportsScreen() {
   const [period, setPeriod] = useState<ReportPeriod>("daily");
   const [report, setReport] = useState<MacroReport | null>(null);
   const [weightTrend, setWeightTrend] = useState<WeightEntry[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const date = todayISO();
     const trendFrom = addDaysISO(date, -29);
+    setError(null);
     Promise.all([
       apiFetch<MacroReport>(`/reports/macros?period=${period}&date=${date}`, { token }),
       apiFetch<WeightEntry[]>(`/weight-entries?from=${trendFrom}&to=${date}`, { token }),
-    ]).then(([r, w]) => {
-      setReport(r);
-      setWeightTrend(w);
-    });
+    ])
+      .then(([r, w]) => {
+        setReport(r);
+        setWeightTrend(w);
+      })
+      .catch((err) => {
+        setError(err instanceof ApiError ? err.message : "טעינת הדוח נכשלה, נסו שוב");
+      });
   }, [token, period]);
 
   if (!report) {
     return (
       <Screen>
         <Text style={styles.heading}>דוחות</Text>
+        <Text style={error ? styles.statusError : styles.noGoal}>{error ?? "טוען..."}</Text>
       </Screen>
     );
   }
@@ -187,6 +194,12 @@ const styles = StyleSheet.create({
     fontFamily: fonts.sans,
     fontSize: 13,
     color: colors.inkSoft,
+    textAlign: "right",
+  },
+  statusError: {
+    fontFamily: fonts.sans,
+    fontSize: 13,
+    color: colors.warn,
     textAlign: "right",
   },
   link: {

@@ -1,4 +1,4 @@
-import { IsDateString, IsNumber, Min } from 'class-validator';
+import { IsDateString, IsNumber, Max, Min } from 'class-validator';
 
 export class UpsertWeightEntryDto {
   @IsDateString()
@@ -6,5 +6,6 @@ export class UpsertWeightEntryDto {
 
   @IsNumber()
   @Min(0)
+  @Max(500)
   weightKg!: number;
 }

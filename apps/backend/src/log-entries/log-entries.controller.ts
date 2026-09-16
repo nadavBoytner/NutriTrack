@@ -1,9 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { CurrentUser } from '../auth/current-user.decorator.js';
 import type { RequestUser } from '../auth/current-user.decorator.js';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
 import { AiParseDto } from './dto/ai-parse.dto.js';
 import { CreateLogEntryDto } from './dto/create-log-entry.dto.js';
+import { QueryHistoryDto } from './dto/query-history.dto.js';
 import { QueryLogEntriesDto } from './dto/query-log-entries.dto.js';
 import { UpdateLogEntryDto } from './dto/update-log-entry.dto.js';
 import { LogEntriesService } from './log-entries.service.js';
@@ -28,6 +30,12 @@ export class LogEntriesController {
     return this.logEntriesService.recentManualFoods(user.userId);
   }
 
+  @Get('history')
+  history(@CurrentUser() user: RequestUser, @Query() query: QueryHistoryDto) {
+    return this.logEntriesService.getHistory(user.userId, query.cursor, query.limit ?? 14);
+  }
+
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post('ai-parse')
   aiParse(@Body() dto: AiParseDto) {
     return this.logEntriesService.aiParse(dto.text);

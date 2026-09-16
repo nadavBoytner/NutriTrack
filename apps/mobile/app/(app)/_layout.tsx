@@ -17,6 +17,7 @@ export default function AppLayout() {
       }}
     >
       <Tabs.Screen name="index" options={{ title: "יומן" }} />
+      <Tabs.Screen name="history" options={{ title: "היסטוריה" }} />
       <Tabs.Screen name="reports" options={{ title: "דוחות" }} />
       <Tabs.Screen name="profile" options={{ title: "פרופיל" }} />
     </Tabs>

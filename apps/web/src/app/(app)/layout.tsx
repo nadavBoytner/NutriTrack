@@ -15,6 +15,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </Link>
           <nav aria-label="ניווט ראשי" className="flex items-center gap-6 text-sm">
             <NavLink href="/">יומן</NavLink>
+            <NavLink href="/history">היסטוריה</NavLink>
             <NavLink href="/reports">דוחות</NavLink>
             <NavLink href="/profile">פרופיל</NavLink>
             <form action={logoutAction}>

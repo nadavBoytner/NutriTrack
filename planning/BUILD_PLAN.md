@@ -149,7 +149,7 @@ Each phase below lists: what it covers, why it matters, the concrete to-do list,
 
 ---
 
-### Phase 6 — Mobile App (Expo / React Native) — Not started
+### Phase 6 — Mobile App (Expo / React Native) — ✅ Done
 
 **Description:** Port the proven web flows to mobile rather than re-designing them from scratch.
 
@@ -165,7 +165,7 @@ Each phase below lists: what it covers, why it matters, the concrete to-do list,
 
 ---
 
-### Phase 7 — Polish & Hardening — Not started
+### Phase 7 — Polish & Hardening — In progress
 
 **Description:** Cross-client cleanup and the first real deploy, once every MVP feature exists.
 

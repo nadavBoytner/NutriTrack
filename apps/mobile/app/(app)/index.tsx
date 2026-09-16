@@ -1,5 +1,5 @@
-import { Link } from "expo-router";
-import { useState } from "react";
+import { Link, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { AiMealParser } from "@/components/AiMealParser";
 import { CircularGauge } from "@/components/CircularGauge";
@@ -10,7 +10,7 @@ import { Screen } from "@/components/Screen";
 import { RemoveButton } from "@/components/RemoveButton";
 import { ACTION_WIDTH, Cell, COL, HeaderCell, HeaderRow, Row, TableWrap } from "@/components/Table";
 import { WeighInForm } from "@/components/WeighInForm";
-import { apiFetch } from "@/lib/api";
+import { ApiError, apiFetch } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { colors } from "@/lib/colors";
 import { addDaysISO, formatHebrewDate, todayISO } from "@/lib/dates";
@@ -19,13 +19,27 @@ import { useDailyLog } from "@/lib/use-daily-log";
 
 export default function LogScreen() {
   const { token } = useAuth();
-  const [date, setDate] = useState(todayISO());
+  const params = useLocalSearchParams<{ date?: string }>();
+  const [date, setDate] = useState(params.date ?? todayISO());
   const isToday = date === todayISO();
-  const { entries, goal, todaysWeight, recentManualFoods, totals, refetch } = useDailyLog(date);
+
+  useEffect(() => {
+    if (params.date && params.date !== date) {
+      setDate(params.date);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.date]);
+  const { entries, goal, todaysWeight, recentManualFoods, totals, loading, error, refetch } = useDailyLog(date);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   async function handleDelete(id: string) {
-    await apiFetch(`/log-entries/${id}`, { method: "DELETE", token });
-    refetch();
+    setDeleteError(null);
+    try {
+      await apiFetch(`/log-entries/${id}`, { method: "DELETE", token });
+      refetch();
+    } catch (err) {
+      setDeleteError(err instanceof ApiError ? err.message : "מחיקת הפריט נכשלה, נסו שוב");
+    }
   }
 
   return (
@@ -46,6 +60,9 @@ export default function LogScreen() {
           <Text style={styles.navArrow}>יום הבא →</Text>
         </Pressable>
       </View>
+
+      {loading && entries.length === 0 && !error && <Text style={styles.status}>טוען...</Text>}
+      {(error || deleteError) && <Text style={styles.statusError}>{error ?? deleteError}</Text>}
 
       <GlassPanel contentStyle={styles.gaugesPanel}>
         <View style={styles.gauges}>
@@ -174,6 +191,20 @@ const styles = StyleSheet.create({
     color: colors.inkSoft,
     textAlign: "right",
     marginBottom: 8,
+  },
+  status: {
+    fontFamily: fonts.sans,
+    fontSize: 13,
+    color: colors.inkSoft,
+    textAlign: "right",
+    marginBottom: 12,
+  },
+  statusError: {
+    fontFamily: fonts.sans,
+    fontSize: 13,
+    color: colors.warn,
+    textAlign: "right",
+    marginBottom: 12,
   },
   link: {
     color: colors.link,

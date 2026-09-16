@@ -1,4 +1,4 @@
-import { IsDateString, IsIn, IsNumber, IsOptional, IsString, IsUUID, Min } from 'class-validator';
+import { IsDateString, IsIn, IsNumber, IsOptional, IsString, IsUUID, Max, MaxLength, Min } from 'class-validator';
 
 export class CreateLogEntryDto {
   @IsDateString()
@@ -6,6 +6,7 @@ export class CreateLogEntryDto {
 
   @IsNumber()
   @Min(0)
+  @Max(100_000)
   quantityG!: number;
 
   @IsOptional()
@@ -18,6 +19,7 @@ export class CreateLogEntryDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(200)
   customName?: string;
 
   @IsOptional()
@@ -27,20 +29,24 @@ export class CreateLogEntryDto {
   @IsOptional()
   @IsNumber()
   @Min(0)
+  @Max(100_000)
   calories?: number;
 
   @IsOptional()
   @IsNumber()
   @Min(0)
+  @Max(100_000)
   carbsG?: number;
 
   @IsOptional()
   @IsNumber()
   @Min(0)
+  @Max(100_000)
   fatG?: number;
 
   @IsOptional()
   @IsNumber()
   @Min(0)
+  @Max(100_000)
   proteinG?: number;
 }

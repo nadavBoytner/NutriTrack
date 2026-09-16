@@ -37,6 +37,16 @@ cp .env.example .env.local
 npm run dev                   # http://localhost:3001
 ```
 
+## Running the mobile app
+
+```bash
+cd apps/mobile
+cp .env.example .env.local    # set EXPO_PUBLIC_API_URL to your machine's LAN IP for on-device testing
+npx expo start                # scan the QR code with Expo Go
+```
+
+See `apps/mobile/README.md` for details.
+
 ## Tests
 
 ```bash
@@ -47,4 +57,4 @@ npm run test:e2e              # e2e tests (needs Postgres running)
 
 ## Status
 
-Phases 0–5 are done: backend (auth, profile/goals, food search, daily log, weight tracking, reports, AI meal parsing) and the web dashboard. The mobile client is still a scaffold — see `planning/BUILD_PLAN.md` for what's next.
+Phases 0–6 are done: backend, web dashboard, and mobile app (Expo Go), all sharing one dark glassmorphism design system. Phase 7 (polish, hardening, deploy) is in progress — see `planning/BUILD_PLAN.md` for what's left.

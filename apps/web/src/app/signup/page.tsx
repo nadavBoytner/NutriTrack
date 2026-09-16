@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { signupAction } from "@/app/actions/auth";
 import { AuthForm } from "@/components/AuthForm";
+
+export const metadata: Metadata = { title: "הרשמה" };
 
 export default function SignupPage() {
   return (

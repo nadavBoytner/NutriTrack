@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { MacroReport, ReportPeriod, WeightEntry } from "@foodtrack/shared-types";
 import { CircularGauge } from "@/components/CircularGauge";
@@ -5,6 +6,8 @@ import { WeightTrendChart } from "@/components/WeightTrendChart";
 import { apiFetch } from "@/lib/api";
 import { requireToken } from "@/lib/auth";
 import { addDaysISO, daysBetweenISO, todayISO } from "@/lib/dates";
+
+export const metadata: Metadata = { title: "דוחות" };
 
 const PERIODS: { value: ReportPeriod; label: string }[] = [
   { value: "daily", label: "יומי" },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useId, useRef, useState } from "react";
 import type { LogEntry, LogEntryUnit } from "@foodtrack/shared-types";
 import { addManualLogEntryAction, type ManualEntryActionState } from "@/app/actions/log";
 import { Button } from "@/components/Button";
@@ -31,7 +31,9 @@ export function ManualEntryForm({ date, recentFoods }: { date: string; recentFoo
     null,
   );
   const wasPending = useRef(false);
+  const panelId = useId();
 
+  const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [mode, setMode] = useState<Mode>("per100g");
   const [amount, setAmount] = useState("100");
@@ -64,31 +66,44 @@ export function ManualEntryForm({ date, recentFoods }: { date: string; recentFoo
   const quantityUnit: LogEntryUnit = mode === "perPortion" ? "portion" : "g";
 
   const modeButtonClass = (m: Mode) =>
-    `border-b px-2 pb-1 text-sm ${
+    `border-b px-2 pb-1 text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight ${
       mode === m ? "border-ink text-ink" : "border-transparent text-ink-soft hover:text-ink"
     }`;
 
   return (
-    <details className="mt-4">
-      <summary className="cursor-pointer text-sm text-ink-soft hover:text-ink">הוספה ידנית</summary>
+    <div className="mt-4">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center gap-1.5 text-sm text-ink-soft transition-colors hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
+      >
+        <span aria-hidden="true" className={`inline-block transition-transform ${open ? "-rotate-90" : ""}`}>
+          ◂
+        </span>
+        הוספה ידנית
+      </button>
 
-      {recentFoods.length > 0 && (
-        <div className="mt-4">
-          <p className="mb-2 text-sm text-ink-soft">מזונות שהוספתי לאחרונה</p>
-          <div className="flex flex-wrap gap-2">
-            {recentFoods.map((food) => (
-              <button
-                key={food.id}
-                type="button"
-                onClick={() => applyRecentFood(food)}
-                className="rounded-md border border-line px-2.5 py-1 text-sm text-ink hover:bg-paper-raised"
-              >
-                {food.customName}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      {open && (
+        <div id={panelId}>
+          {recentFoods.length > 0 && (
+            <div className="mt-4">
+              <p className="mb-2 text-sm text-ink-soft">מזונות שהוספתי לאחרונה</p>
+              <div className="flex flex-wrap gap-2">
+                {recentFoods.map((food) => (
+                  <button
+                    key={food.id}
+                    type="button"
+                    onClick={() => applyRecentFood(food)}
+                    className="rounded-md border border-line px-2.5 py-1 text-sm text-ink transition-colors hover:bg-paper-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
+                  >
+                    {food.customName}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
       <form action={formAction} className="mt-4 space-y-4">
         <input type="hidden" name="date" value={date} />
@@ -103,9 +118,10 @@ export function ManualEntryForm({ date, recentFoods }: { date: string; recentFoo
           <Input id="customName" name="customName" value={name} onChange={(e) => setName(e.target.value)} required />
         </Field>
 
-        <div className="flex gap-2">
+        <div role="group" aria-label="יחידת מידה" className="flex gap-2">
           <button
             type="button"
+            aria-pressed={mode === "per100g"}
             className={modeButtonClass("per100g")}
             onClick={() => {
               setMode("per100g");
@@ -116,6 +132,7 @@ export function ManualEntryForm({ date, recentFoods }: { date: string; recentFoo
           </button>
           <button
             type="button"
+            aria-pressed={mode === "perPortion"}
             className={modeButtonClass("perPortion")}
             onClick={() => {
               setMode("perPortion");
@@ -190,11 +207,13 @@ export function ManualEntryForm({ date, recentFoods }: { date: string; recentFoo
           {Math.round(proteinG)}
         </p>
 
-        {state?.error && <p className="text-sm text-warn">{state.error}</p>}
-        <Button type="submit" variant="ghost" disabled={pending}>
-          {pending ? "רגע..." : "הוספה לרשימה"}
-        </Button>
-      </form>
-    </details>
+            {state?.error && <p className="text-sm text-warn">{state.error}</p>}
+            <Button type="submit" variant="ghost" disabled={pending}>
+              {pending ? "רגע..." : "הוספה לרשימה"}
+            </Button>
+          </form>
+        </div>
+      )}
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import type { NutritionGoal } from "@foodtrack/shared-types";
 import { updateNutritionGoalAction, type ProfileActionState } from "@/app/actions/profile";
 import { Button } from "@/components/Button";
@@ -11,6 +11,33 @@ export function NutritionGoalForm({ goal }: { goal: NutritionGoal | null }) {
     updateNutritionGoalAction,
     null,
   );
+  const wasPending = useRef(false);
+  const [editing, setEditing] = useState(!goal);
+
+  useEffect(() => {
+    if (wasPending.current && !pending && !state?.error) {
+      setEditing(false);
+    }
+    wasPending.current = pending;
+  }, [pending, state]);
+
+  if (!editing) {
+    return (
+      <div>
+        <SummaryRow label="קלוריות ליום" value={goal ? String(goal.dailyCalories) : "—"} />
+        <SummaryRow label="פחמימות" value={goal ? `${goal.dailyCarbsG} גר'` : "—"} />
+        <SummaryRow label="שומן" value={goal ? `${goal.dailyFatG} גר'` : "—"} />
+        <SummaryRow label="חלבון" value={goal ? `${goal.dailyProteinG} גר'` : "—"} />
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          className="mt-3 text-sm text-link underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
+        >
+          עריכה
+        </button>
+      </div>
+    );
+  }
 
   return (
     <form action={formAction} className="space-y-4">
@@ -50,9 +77,29 @@ export function NutritionGoalForm({ goal }: { goal: NutritionGoal | null }) {
         </Field>
       </div>
       {state?.error && <p className="text-sm text-warn">{state.error}</p>}
-      <Button type="submit" disabled={pending}>
-        {pending ? "רגע..." : "שמירת יעדים"}
-      </Button>
+      <div className="flex items-center gap-4">
+        <Button type="submit" disabled={pending}>
+          {pending ? "רגע..." : "שמירת יעדים"}
+        </Button>
+        {goal && (
+          <button
+            type="button"
+            onClick={() => setEditing(false)}
+            className="text-sm text-ink-soft underline underline-offset-2 hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
+          >
+            ביטול
+          </button>
+        )}
+      </div>
     </form>
+  );
+}
+
+function SummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-baseline justify-between border-b border-line py-2.5 text-sm">
+      <span className="text-ink-soft">{label}</span>
+      <span className="font-medium tabular-nums text-ink">{value}</span>
+    </div>
   );
 }

@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { loginAction } from "@/app/actions/auth";
 import { AuthForm } from "@/components/AuthForm";
+
+export const metadata: Metadata = { title: "התחברות" };
 
 export default function LoginPage() {
   return (

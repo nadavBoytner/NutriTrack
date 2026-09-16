@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import type { NutritionGoal, Profile } from "@foodtrack/shared-types";
 import { NutritionGoalForm } from "@/components/NutritionGoalForm";
 import { ProfileForm } from "@/components/ProfileForm";
 import { apiFetch } from "@/lib/api";
 import { requireToken } from "@/lib/auth";
+
+export const metadata: Metadata = { title: "פרופיל" };
 
 export default async function ProfilePage() {
   const token = await requireToken();

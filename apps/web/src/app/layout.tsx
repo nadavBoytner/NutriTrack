@@ -14,7 +14,10 @@ const frankRuhlLibre = Frank_Ruhl_Libre({
 });
 
 export const metadata: Metadata = {
-  title: "NutriTrack",
+  title: {
+    default: "NutriTrack",
+    template: "%s · NutriTrack",
+  },
   description: "מעקב תזונה יומי",
 };
 

@@ -58,7 +58,7 @@ export function RemoveButton({
         <button
           type="button"
           onClick={cancel}
-          className="rounded px-2 py-1 text-ink-soft hover:bg-paper-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
+          className="rounded px-2 py-1 text-ink-soft transition-colors duration-200 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
         >
           ביטול
         </button>

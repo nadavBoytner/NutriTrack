@@ -29,19 +29,19 @@ export function FoodResultRow({
   const quantityG = mode === "g" ? grams : unitCount * gramsPerUnit;
 
   const modeButtonClass = (m: Mode) =>
-    `border-b px-1 pb-0.5 text-xs ${
-      mode === m ? "border-ink text-ink" : "border-transparent text-ink-soft hover:text-ink"
+    `border-b px-1 pb-0.5 text-xs transition-colors duration-200 ${
+      mode === m ? "border-good text-ink" : "border-transparent text-ink-soft hover:text-ink"
     }`;
 
   return (
-    <tr className="border-b border-line transition-colors hover:bg-paper-raised/60">
+    <tr className="border-b border-line transition-colors duration-200 hover:bg-white/5">
       <td className="max-w-48 py-3 pe-3 align-top">
         <p className="truncate">{item.name}</p>
         <p className="text-xs tabular-nums text-ink-soft">{macroLine(item)}</p>
       </td>
       <td className="py-3 pe-3 align-top">
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex gap-1 rounded-md bg-paper-raised p-0.5">
+          <div className="flex gap-1 rounded-full bg-white/5 p-0.5">
             <button type="button" className={modeButtonClass("g")} onClick={() => setMode("g")}>
               גרם
             </button>

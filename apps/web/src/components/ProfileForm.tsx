@@ -87,10 +87,10 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
               type="button"
               aria-pressed={goalType === value}
               onClick={() => setGoalType(value)}
-              className={`rounded-md border px-3 py-1.5 text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight ${
+              className={`rounded-full border px-3.5 py-1.5 text-sm transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight ${
                 goalType === value
-                  ? "border-good bg-good text-paper"
-                  : "border-line text-ink hover:bg-paper-raised"
+                  ? "border-good-fill bg-good-fill text-on-fill"
+                  : "border-line text-ink hover:bg-white/10"
               }`}
             >
               {label}

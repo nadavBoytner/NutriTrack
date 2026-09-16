@@ -66,12 +66,12 @@ export function ManualEntryForm({ date, recentFoods }: { date: string; recentFoo
   const quantityUnit: LogEntryUnit = mode === "perPortion" ? "portion" : "g";
 
   const modeButtonClass = (m: Mode) =>
-    `border-b px-2 pb-1 text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight ${
-      mode === m ? "border-ink text-ink" : "border-transparent text-ink-soft hover:text-ink"
+    `border-b px-2 pb-1 text-sm transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight ${
+      mode === m ? "border-good text-ink" : "border-transparent text-ink-soft hover:text-ink"
     }`;
 
   return (
-    <div className="mt-4">
+    <div className="mt-6 border-t border-line pt-6">
       <button
         type="button"
         aria-expanded={open}
@@ -96,7 +96,7 @@ export function ManualEntryForm({ date, recentFoods }: { date: string; recentFoo
                     key={food.id}
                     type="button"
                     onClick={() => applyRecentFood(food)}
-                    className="rounded-md border border-line px-2.5 py-1 text-sm text-ink transition-colors hover:bg-paper-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
+                    className="rounded-full border border-line px-2.5 py-1 text-sm text-ink transition-colors duration-200 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight"
                   >
                     {food.customName}
                   </button>

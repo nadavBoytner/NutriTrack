@@ -25,7 +25,16 @@ export function CircularGauge({
 
   return (
     <View style={styles.wrap}>
-      <View style={{ width: SIZE, height: SIZE }}>
+      <View
+        style={{
+          width: SIZE,
+          height: SIZE,
+          shadowColor: color,
+          shadowOpacity: 0.55,
+          shadowRadius: 8,
+          shadowOffset: { width: 0, height: 0 },
+        }}
+      >
         <Svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
           <Circle
             cx={SIZE / 2}

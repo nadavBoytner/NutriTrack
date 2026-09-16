@@ -63,8 +63,8 @@ export default async function LogPage(props: PageProps<"/">) {
       </div>
 
       <div className="lg:grid lg:grid-cols-[280px_1fr] lg:items-start lg:gap-12">
-        <div className="space-y-8 lg:sticky lg:top-10 lg:pb-8">
-          <section className="space-y-4 border-b border-line pb-8 lg:border-b-0 lg:pb-0">
+        <div className="space-y-6 lg:sticky lg:top-24">
+          <section className="glass-panel space-y-4 p-5">
             <div className="grid grid-cols-4 gap-2 lg:grid-cols-2 lg:gap-y-6">
               <CircularGauge label="קלוריות" current={totals.calories} goal={goal?.dailyCalories ?? null} unit="קל'" />
               <CircularGauge label="פחמימות" current={totals.carbsG} goal={goal?.dailyCarbsG ?? null} unit="גר'" />
@@ -82,19 +82,19 @@ export default async function LogPage(props: PageProps<"/">) {
             )}
           </section>
 
-          <section className="border-b border-line pb-8 lg:border-b-0 lg:border-t lg:pb-0 lg:pt-8">
+          <section className="glass-panel p-5">
             <WeighInForm date={date} initialWeightKg={todaysWeight} />
           </section>
         </div>
 
-        <section className="mt-8 lg:mt-0">
-          <h2 className="mb-3 font-display text-lg font-medium">מה אכלתי</h2>
+        <section className="glass-panel mt-6 p-5 lg:mt-0 lg:p-6">
+          <h2 className="mb-3 font-display text-lg font-bold tracking-tight">מה אכלתי</h2>
 
           {entries.length > 0 ? (
             <div className="mb-4 overflow-x-auto">
               <table className="w-full min-w-[480px] border-collapse text-sm">
                 <thead>
-                  <tr className="border-b-2 border-ink text-xs text-ink-soft">
+                  <tr className="border-b border-white/15 text-xs text-ink-soft">
                     <th className="py-2 text-start font-normal">מאכל</th>
                     <th className="py-2 text-start font-normal">כמות</th>
                     <th className="py-2 text-start font-normal">קל&apos;</th>
@@ -106,7 +106,7 @@ export default async function LogPage(props: PageProps<"/">) {
                 </thead>
                 <tbody>
                   {entries.map((entry) => (
-                    <tr key={entry.id} className="border-b border-line transition-colors hover:bg-paper-raised/60">
+                    <tr key={entry.id} className="border-b border-line transition-colors duration-200 hover:bg-white/5">
                       <td className="max-w-40 truncate py-2.5 pe-2">
                         {entry.customName ?? entry.foodItem?.name ?? "פריט"}
                         {entry.source === "ai_estimated" && (

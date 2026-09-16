@@ -208,9 +208,10 @@ const styles = StyleSheet.create({
   },
   chip: {
     borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: 6,
-    paddingHorizontal: 10,
+    borderColor: colors.surfaceBorder,
+    backgroundColor: colors.surface,
+    borderRadius: 999,
+    paddingHorizontal: 12,
     paddingVertical: 6,
   },
   chipText: {
@@ -233,7 +234,7 @@ const styles = StyleSheet.create({
     color: colors.ink,
     fontFamily: fonts.sansMedium,
     borderBottomWidth: 2,
-    borderBottomColor: colors.ink,
+    borderBottomColor: colors.good,
   },
   grid: {
     flexDirection: "row-reverse",

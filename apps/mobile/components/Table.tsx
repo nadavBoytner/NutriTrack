@@ -61,8 +61,8 @@ export function Cell({
 const styles = StyleSheet.create({
   headerRow: {
     flexDirection: "row-reverse",
-    borderBottomWidth: 2,
-    borderBottomColor: colors.ink,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.surfaceBorder,
     paddingBottom: 8,
   },
   headerCell: {

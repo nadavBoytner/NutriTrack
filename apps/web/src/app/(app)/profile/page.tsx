@@ -16,14 +16,14 @@ export default async function ProfilePage() {
   ]);
 
   return (
-    <div className="space-y-10">
-      <section>
-        <h1 className="mb-4 font-display text-xl font-medium">פרופיל</h1>
+    <div className="space-y-6">
+      <section className="glass-panel p-5 lg:p-6">
+        <h1 className="mb-4 font-display text-xl font-bold tracking-tight">פרופיל</h1>
         <ProfileForm profile={profile} />
       </section>
 
-      <section className="border-t border-line pt-8">
-        <h2 className="mb-4 font-display text-lg font-medium">יעדי תזונה יומיים</h2>
+      <section className="glass-panel p-5 lg:p-6">
+        <h2 className="mb-4 font-display text-lg font-bold tracking-tight">יעדי תזונה יומיים</h2>
         <NutritionGoalForm goal={goal} />
       </section>
     </div>

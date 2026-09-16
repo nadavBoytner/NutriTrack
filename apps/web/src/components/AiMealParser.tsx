@@ -4,6 +4,7 @@ import { useState, useTransition, type KeyboardEvent } from "react";
 import type { AiParsedItem } from "@foodtrack/shared-types";
 import { confirmAiParsedItemAction, parseMealTextAction } from "@/app/actions/log";
 import { Button } from "@/components/Button";
+import { RemoveButton } from "@/components/RemoveButton";
 
 interface Rate {
   calories: number;
@@ -88,7 +89,7 @@ export function AiMealParser({ date }: { date: string }) {
 
   return (
     <div className="mt-6 border-t border-line pt-6">
-      <h2 className="mb-2 font-display text-lg font-medium">מה אכלת?</h2>
+      <h2 className="mb-2 font-display text-lg font-bold tracking-tight">מה אכלת?</h2>
       <textarea
         value={text}
         onChange={(event) => setText(event.target.value)}
@@ -110,7 +111,7 @@ export function AiMealParser({ date }: { date: string }) {
           <div className="overflow-x-auto border-y border-line">
             <table className="w-full min-w-[560px] border-collapse text-sm">
               <thead>
-                <tr className="border-b-2 border-ink text-xs text-ink-soft">
+                <tr className="border-b border-white/15 text-xs text-ink-soft">
                   <th className="py-2 text-start font-normal">מאכל</th>
                   <th className="py-2 text-start font-normal">כמות</th>
                   <th className="py-2 text-start font-normal">קל&apos;</th>
@@ -178,14 +179,11 @@ export function AiMealParser({ date }: { date: string }) {
                     </td>
 
                     <td className="py-2.5 align-top text-end">
-                      <button
-                        type="button"
-                        aria-label="הסרה"
-                        onClick={() => removeDraft(item.key)}
-                        className="rounded px-1.5 py-0.5 text-ink-soft transition-colors hover:bg-warn-soft hover:text-warn"
-                      >
-                        ✕
-                      </button>
+                      <RemoveButton
+                        onRemove={() => removeDraft(item.key)}
+                        confirm={false}
+                        itemLabel={item.customName}
+                      />
                     </td>
                   </tr>
                 ))}

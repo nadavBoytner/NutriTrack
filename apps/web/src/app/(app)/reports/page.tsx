@@ -50,16 +50,16 @@ export default async function ReportsPage(props: PageProps<"/reports">) {
       : null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
-        <h1 className="mb-4 font-display text-xl font-medium">דוחות</h1>
-        <nav className="flex gap-5 border-b border-line text-sm">
+        <h1 className="mb-4 font-display text-xl font-bold tracking-tight">דוחות</h1>
+        <nav className="glass-panel flex w-fit gap-1 p-1 text-sm">
           {PERIODS.map((p) => (
             <Link
               key={p.value}
               href={`/reports?period=${p.value}`}
-              className={`-mb-px border-b-2 pb-2 ${
-                p.value === period ? "border-ink text-ink" : "border-transparent text-ink-soft hover:text-ink"
+              className={`rounded-full px-4 py-1.5 transition-colors duration-200 ${
+                p.value === period ? "bg-good-fill text-on-fill" : "text-ink-soft hover:text-ink"
               }`}
             >
               {p.label}
@@ -68,9 +68,9 @@ export default async function ReportsPage(props: PageProps<"/reports">) {
         </nav>
       </div>
 
-      <section className="space-y-4 border-b border-line pb-8">
+      <section className="glass-panel space-y-4 p-5 lg:p-6">
         <div className="flex items-baseline justify-between">
-          {average && <h2 className="font-display text-lg font-medium">סה&quot;כ לתקופה</h2>}
+          {average && <h2 className="font-display text-lg font-bold tracking-tight">סה&quot;כ לתקופה</h2>}
           <p dir="ltr" className="text-right text-sm text-ink-soft">
             {report.from === report.to ? report.from : `${report.from} – ${report.to}`}
           </p>
@@ -93,8 +93,8 @@ export default async function ReportsPage(props: PageProps<"/reports">) {
       </section>
 
       {average && (
-        <section className="space-y-4 border-b border-line pb-8">
-          <h2 className="font-display text-lg font-medium">ממוצע יומי</h2>
+        <section className="glass-panel space-y-4 p-5 lg:p-6">
+          <h2 className="font-display text-lg font-bold tracking-tight">ממוצע יומי</h2>
           <div className="grid grid-cols-4 gap-2">
             <CircularGauge label="קלוריות" current={average.calories} goal={dailyGoal?.calories ?? null} unit="קל'" />
             <CircularGauge label="פחמימות" current={average.carbsG} goal={dailyGoal?.carbsG ?? null} unit="גר'" />
@@ -104,8 +104,8 @@ export default async function ReportsPage(props: PageProps<"/reports">) {
         </section>
       )}
 
-      <section>
-        <h2 className="mb-3 font-display text-lg font-medium">מגמת משקל (30 יום אחרונים)</h2>
+      <section className="glass-panel p-5 lg:p-6">
+        <h2 className="mb-3 font-display text-lg font-bold tracking-tight">מגמת משקל (30 יום אחרונים)</h2>
         <WeightTrendChart entries={weightTrend} />
       </section>
     </div>

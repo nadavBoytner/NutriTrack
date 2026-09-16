@@ -4,16 +4,16 @@ import { fonts } from "@/lib/fonts";
 
 export const authStyles = StyleSheet.create({
   header: {
-    marginTop: 64,
-    marginBottom: 32,
+    marginBottom: 24,
     borderBottomWidth: 1,
     borderBottomColor: colors.line,
-    paddingBottom: 24,
+    paddingBottom: 20,
   },
   wordmark: {
     fontFamily: fonts.displayBold,
     fontSize: 30,
-    color: colors.ink,
+    color: colors.good,
+    letterSpacing: -0.5,
     textAlign: "right",
   },
   subtitle: {

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { MacroReport, ReportPeriod, WeightEntry } from "@foodtrack/shared-types";
 import { CircularGauge } from "@/components/CircularGauge";
+import { GlassPanel } from "@/components/GlassPanel";
 import { Screen } from "@/components/Screen";
 import { WeightTrendChart } from "@/components/WeightTrendChart";
 import { apiFetch } from "@/lib/api";
@@ -68,14 +69,17 @@ export default function ReportsScreen() {
       <Text style={styles.heading}>דוחות</Text>
       <View style={styles.tabs}>
         {PERIODS.map((p) => (
-          <Pressable key={p.value} onPress={() => setPeriod(p.value)} style={styles.tab}>
+          <Pressable
+            key={p.value}
+            onPress={() => setPeriod(p.value)}
+            style={[styles.tab, p.value === period && styles.tabActive]}
+          >
             <Text style={[styles.tabLabel, p.value === period && styles.tabLabelActive]}>{p.label}</Text>
-            {p.value === period && <View style={styles.tabUnderline} />}
           </Pressable>
         ))}
       </View>
 
-      <View style={styles.section}>
+      <GlassPanel style={styles.panelSpacing} contentStyle={styles.sectionContent}>
         <View style={styles.sectionHeader}>
           {average && <Text style={styles.sectionTitle}>סה&quot;כ לתקופה</Text>}
           <Text style={styles.range}>{report.from === report.to ? report.from : `${report.from} – ${report.to}`}</Text>
@@ -95,10 +99,10 @@ export default function ReportsScreen() {
             .
           </Text>
         )}
-      </View>
+      </GlassPanel>
 
       {average && (
-        <View style={styles.section}>
+        <GlassPanel style={styles.panelSpacing} contentStyle={styles.sectionContent}>
           <Text style={styles.sectionTitle}>ממוצע יומי</Text>
           <View style={styles.gauges}>
             <CircularGauge label="קלוריות" current={average.calories} goal={dailyGoal?.calories ?? null} unit="קל'" />
@@ -106,13 +110,13 @@ export default function ReportsScreen() {
             <CircularGauge label="שומן" current={average.fatG} goal={dailyGoal?.fatG ?? null} unit="גר'" />
             <CircularGauge label="חלבון" current={average.proteinG} goal={dailyGoal?.proteinG ?? null} unit="גר'" />
           </View>
-        </View>
+        </GlassPanel>
       )}
 
-      <View style={styles.section}>
+      <GlassPanel style={styles.panelSpacing} contentStyle={styles.sectionContent}>
         <Text style={styles.sectionTitle}>מגמת משקל (30 יום אחרונים)</Text>
         <WeightTrendChart entries={weightTrend} />
-      </View>
+      </GlassPanel>
     </Screen>
   );
 }
@@ -127,33 +131,36 @@ const styles = StyleSheet.create({
   },
   tabs: {
     flexDirection: "row-reverse",
-    gap: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.line,
+    gap: 4,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.surfaceBorder,
+    borderRadius: 999,
+    padding: 4,
     marginBottom: 20,
+    alignSelf: "flex-start",
   },
   tab: {
-    paddingBottom: 8,
+    paddingVertical: 7,
+    paddingHorizontal: 16,
+    borderRadius: 999,
+  },
+  tabActive: {
+    backgroundColor: colors.goodFill,
   },
   tabLabel: {
     fontFamily: fonts.sans,
-    fontSize: 14,
+    fontSize: 13,
     color: colors.inkSoft,
   },
   tabLabelActive: {
-    color: colors.ink,
+    color: colors.onFill,
     fontFamily: fonts.sansMedium,
   },
-  tabUnderline: {
-    height: 2,
-    backgroundColor: colors.ink,
-    marginTop: 8,
+  panelSpacing: {
+    marginTop: 16,
   },
-  section: {
-    borderTopWidth: 1,
-    borderTopColor: colors.line,
-    paddingTop: 20,
-    marginTop: 20,
+  sectionContent: {
     gap: 12,
   },
   sectionHeader: {

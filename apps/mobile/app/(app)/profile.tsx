@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { GoalType, NutritionGoal, Profile } from "@foodtrack/shared-types";
 import { Button } from "@/components/Button";
 import { Field, Input } from "@/components/Field";
+import { GlassPanel } from "@/components/GlassPanel";
 import { Screen } from "@/components/Screen";
 import { ApiError, apiFetch } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
@@ -130,6 +131,7 @@ export default function ProfileScreen() {
 
   return (
     <Screen>
+      <GlassPanel>
       <View style={styles.sectionHeader}>
         <Text style={styles.heading}>פרופיל</Text>
         {!editingProfile && (
@@ -198,8 +200,9 @@ export default function ProfileScreen() {
           <SummaryRow label="מטרה" value={profile?.goalType ? GOAL_LABELS[profile.goalType] : "—"} />
         </View>
       )}
+      </GlassPanel>
 
-      <View style={styles.section}>
+      <GlassPanel style={styles.panelSpacing}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionHeading}>יעדי תזונה יומיים</Text>
           {!editingGoal && (
@@ -258,9 +261,9 @@ export default function ProfileScreen() {
             <SummaryRow label="חלבון" value={goal ? `${goal.dailyProteinG} גר'` : "—"} />
           </View>
         )}
-      </View>
+      </GlassPanel>
 
-      <View style={styles.section}>
+      <View style={styles.logoutRow}>
         <Button variant="danger" label="התנתקות" onPress={signOut} />
       </View>
     </Screen>
@@ -315,14 +318,15 @@ const styles = StyleSheet.create({
   },
   chip: {
     borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: 6,
+    borderColor: colors.surfaceBorder,
+    backgroundColor: colors.surface,
+    borderRadius: 999,
     paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
   },
   chipActive: {
-    backgroundColor: colors.good,
-    borderColor: colors.good,
+    backgroundColor: colors.goodFill,
+    borderColor: colors.goodFill,
   },
   chipLabel: {
     fontFamily: fonts.sans,
@@ -330,7 +334,7 @@ const styles = StyleSheet.create({
     color: colors.ink,
   },
   chipLabelActive: {
-    color: colors.paper,
+    color: colors.onFill,
     fontFamily: fonts.sansMedium,
   },
   error: {
@@ -365,12 +369,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.ink,
   },
-  section: {
-    borderTopWidth: 1,
-    borderTopColor: colors.line,
-    paddingTop: 20,
+  panelSpacing: {
+    marginTop: 16,
+  },
+  logoutRow: {
     marginTop: 24,
-    gap: 4,
   },
   sectionHeading: {
     fontFamily: fonts.displayBold,

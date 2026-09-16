@@ -1,5 +1,5 @@
 import { Text as RNText, StyleSheet, View } from "react-native";
-import Svg, { Circle, Line, Path, Text as SvgText } from "react-native-svg";
+import Svg, { Circle, Defs, Line, LinearGradient, Path, Stop, Text as SvgText } from "react-native-svg";
 import type { WeightEntry } from "@foodtrack/shared-types";
 import { colors } from "@/lib/colors";
 import { fonts } from "@/lib/fonts";
@@ -27,14 +27,23 @@ export function WeightTrendChart({ entries }: { entries: WeightEntry[] }) {
   });
 
   const path = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
+  const areaPath = `${path} L ${points[points.length - 1].x.toFixed(1)} ${HEIGHT - PADDING} L ${points[0].x.toFixed(1)} ${HEIGHT - PADDING} Z`;
+  const last = points[points.length - 1];
 
   return (
     <View>
       <Svg width="100%" height={HEIGHT} viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
+        <Defs>
+          <LinearGradient id="weightArea" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0%" stopColor={colors.good} stopOpacity={0.28} />
+            <Stop offset="100%" stopColor={colors.good} stopOpacity={0} />
+          </LinearGradient>
+        </Defs>
         <Line x1={PADDING} y1={HEIGHT - PADDING} x2={WIDTH - PADDING} y2={HEIGHT - PADDING} stroke={colors.line} />
-        <Path d={path} fill="none" stroke={colors.good} strokeWidth={1.5} />
+        <Path d={areaPath} fill="url(#weightArea)" stroke="none" />
+        <Path d={path} fill="none" stroke={colors.good} strokeWidth={1.75} />
         {points.map((p) => (
-          <Circle key={p.entry.id} cx={p.x} cy={p.y} r={2.5} fill={colors.good} />
+          <Circle key={p.entry.id} cx={p.x} cy={p.y} r={p === last ? 3.5 : 2.25} fill={colors.good} />
         ))}
         <SvgText x={PADDING} y={16} fontSize={12} fill={colors.inkSoft}>
           {max.toLocaleString("he-IL")} ק&quot;ג

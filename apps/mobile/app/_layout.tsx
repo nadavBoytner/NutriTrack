@@ -49,7 +49,7 @@ function RootNavigator() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.paper } }}>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.ground } }}>
       <Stack.Protected guard={!!token}>
         <Stack.Screen name="(app)" />
       </Stack.Protected>

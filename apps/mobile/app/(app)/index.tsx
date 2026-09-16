@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { AiMealParser } from "@/components/AiMealParser";
 import { CircularGauge } from "@/components/CircularGauge";
 import { FoodSearch } from "@/components/FoodSearch";
+import { GlassPanel } from "@/components/GlassPanel";
 import { ManualEntryForm } from "@/components/ManualEntryForm";
 import { Screen } from "@/components/Screen";
 import { RemoveButton } from "@/components/RemoveButton";
@@ -46,27 +47,29 @@ export default function LogScreen() {
         </Pressable>
       </View>
 
-      <View style={styles.gauges}>
-        <CircularGauge label="קלוריות" current={totals.calories} goal={goal?.dailyCalories ?? null} unit="קל'" />
-        <CircularGauge label="פחמימות" current={totals.carbsG} goal={goal?.dailyCarbsG ?? null} unit="גר'" />
-        <CircularGauge label="שומן" current={totals.fatG} goal={goal?.dailyFatG ?? null} unit="גר'" />
-        <CircularGauge label="חלבון" current={totals.proteinG} goal={goal?.dailyProteinG ?? null} unit="גר'" />
-      </View>
-      {!goal && (
-        <Text style={styles.noGoal}>
-          עדיין לא הוגדרו יעדי תזונה. אפשר להגדיר אותם ב
-          <Link href="/profile" style={styles.link}>
-            דף הפרופיל
-          </Link>
-          .
-        </Text>
-      )}
+      <GlassPanel contentStyle={styles.gaugesPanel}>
+        <View style={styles.gauges}>
+          <CircularGauge label="קלוריות" current={totals.calories} goal={goal?.dailyCalories ?? null} unit="קל'" />
+          <CircularGauge label="פחמימות" current={totals.carbsG} goal={goal?.dailyCarbsG ?? null} unit="גר'" />
+          <CircularGauge label="שומן" current={totals.fatG} goal={goal?.dailyFatG ?? null} unit="גר'" />
+          <CircularGauge label="חלבון" current={totals.proteinG} goal={goal?.dailyProteinG ?? null} unit="גר'" />
+        </View>
+        {!goal && (
+          <Text style={styles.noGoal}>
+            עדיין לא הוגדרו יעדי תזונה. אפשר להגדיר אותם ב
+            <Link href="/profile" style={styles.link}>
+              דף הפרופיל
+            </Link>
+            .
+          </Text>
+        )}
+      </GlassPanel>
 
-      <View style={styles.section}>
+      <GlassPanel style={styles.panelSpacing}>
         <WeighInForm date={date} initialWeightKg={todaysWeight} onSaved={refetch} />
-      </View>
+      </GlassPanel>
 
-      <View style={styles.section}>
+      <GlassPanel style={styles.panelSpacing}>
         <Text style={styles.heading}>מה אכלתי</Text>
         {entries.length > 0 ? (
           <TableWrap>
@@ -113,19 +116,19 @@ export default function LogScreen() {
         ) : (
           <Text style={styles.empty}>עדיין לא נרשמו פריטים ליום הזה.</Text>
         )}
-      </View>
 
-      <View style={styles.section}>
-        <AiMealParser date={date} onAdded={refetch} />
-      </View>
+        <View style={styles.subSection}>
+          <AiMealParser date={date} onAdded={refetch} />
+        </View>
 
-      <View style={styles.section}>
-        <FoodSearch date={date} onAdded={refetch} />
-      </View>
+        <View style={styles.subSection}>
+          <FoodSearch date={date} onAdded={refetch} />
+        </View>
 
-      <View style={styles.section}>
-        <ManualEntryForm date={date} recentFoods={recentManualFoods} onAdded={refetch} />
-      </View>
+        <View style={styles.subSection}>
+          <ManualEntryForm date={date} recentFoods={recentManualFoods} onAdded={refetch} />
+        </View>
+      </GlassPanel>
     </Screen>
   );
 }
@@ -157,6 +160,9 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     marginTop: 2,
   },
+  gaugesPanel: {
+    paddingVertical: 20,
+  },
   gauges: {
     flexDirection: "row-reverse",
     justifyContent: "space-between",
@@ -173,7 +179,10 @@ const styles = StyleSheet.create({
     color: colors.link,
     textDecorationLine: "underline",
   },
-  section: {
+  panelSpacing: {
+    marginTop: 16,
+  },
+  subSection: {
     borderTopWidth: 1,
     borderTopColor: colors.line,
     paddingTop: 20,

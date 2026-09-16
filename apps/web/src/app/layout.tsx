@@ -24,7 +24,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="he" dir="rtl" className={`${heebo.variable} ${frankRuhlLibre.variable}`}>
-      <body>{children}</body>
+      <body>
+        <div aria-hidden="true" className="bg-glow bg-glow-1" />
+        <div aria-hidden="true" className="bg-glow bg-glow-2" />
+        <div aria-hidden="true" className="bg-glow bg-glow-3" />
+        <div id="page-root">{children}</div>
+      </body>
     </html>
   );
 }

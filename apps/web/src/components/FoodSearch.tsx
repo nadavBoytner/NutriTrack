@@ -33,7 +33,7 @@ export function FoodSearch({ date }: { date: string }) {
   }
 
   return (
-    <div>
+    <div className="mt-6 border-t border-line pt-6">
       <form onSubmit={handleSearch} className="flex gap-2">
         <Input
           value={query}
